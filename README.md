@@ -5,6 +5,8 @@
 ◾ 광주대학교 학생들이 필요한 정보를 빠르게 찾고 활용할 수 있도록 돕는 것이 목표이다.
 # 🌐 Connection
     ⚠️ URL 준비 중
+# 📱 APK Download
+⚠️ APK 준비 중
 # 📚 Environments  
 <div align=left>  
   <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white"> 
