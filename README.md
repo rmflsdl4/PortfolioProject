@@ -7,7 +7,3 @@
         📂 pages
             📃 Main.jsx - 메인 화면
 ### ⚠ issues
-
-    
-### 📱 Download
-🔽 [APK 추가 예정]
