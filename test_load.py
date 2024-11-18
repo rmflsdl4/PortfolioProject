@@ -10,9 +10,16 @@ from langchain.vectorstores import Chroma
 from langchain_community.chat_models import ChatOllama
 warnings.filterwarnings("ignore")
 
+# PDF 파일명 로드 (추후에 복수의 파일로 파일 로드 할 수 있게 for 내의 try 수정)
+os.chdir("./대학생활") #PDF가 존재하는 폴더 지정
 
-
-
+file_names = os.listdir()
+for file_name in file_names:
+    try:
+        print(file_name)
+    except:
+        print("에러 발생")
+        
 # PyMuPDFLoader 을 이용해 PDF 파일 로드
 loader = PyMuPDFLoader("gw.pdf")
 pages = loader.load()
