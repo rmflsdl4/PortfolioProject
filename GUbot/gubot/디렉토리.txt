@@ -1,0 +1,31 @@
+gubot
+├── .mvn
+├── wrapper
+│   └── maven-wrapper.properties
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── portfolio
+│   │   │           └── gubot
+│   │   │               ├── controller
+│   │   │               │   ├── MainController.java
+│   │   │               │   ├── RestController.java
+│   │   │               │   └── UserController.java
+│   │   │               ├── db
+│   │   │               │   └── User.java
+│   │   │               ├── Config.java
+│   │   │               └── GabotApplication.java
+│   ├── resources
+│   │   ├── css
+│   │   ├── images
+│   │   ├── pages
+│   │   │   └── main.html
+│   │   └── application.properties
+├── test
+├── target
+├── .gitattributes
+├── .gitignore
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
