@@ -1,23 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>GUBot</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script>
-            $.ajax({
-                type: "GET",
-                url: "/valueTest",
-                success: (data) => {
-                console.log(data);
-                $('#contents').html(data);
-                }
-            });
-        </script>
-    </head>
-    <body>
-        <h1>Main HTML</h1>
-        <div id="contents">
-        </div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User List</title>
+</head>
+<body>
+    <h1>All Users</h1>
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>User Name</th>
+                <th>Email</th>
+                <th>Birthday</th>
+                <th>Student ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 데이터가 여기에 표시됩니다. -->
+        </tbody>
+    </table>
+
+    <script>
+        // 서버에서 사용자 목록을 가져오는 함수
+        function fetchUsers() {
+            fetch('/api/User/all') // API 엔드포인트에 맞게 수정
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 사용자 데이터를 테이블에 표시
+                    const tableBody = document.querySelector('#userTable tbody');
+                    tableBody.innerHTML = ''; // 기존 테이블 데이터 초기화
+
+                    // 데이터가 배열 형식으로 반환된다고 가정
+                    data.forEach(user => {
+                        const row = document.createElement('tr');
+                        
+                        const userIdCell = document.createElement('td');
+                        userIdCell.textContent = user.userId;
+                        row.appendChild(userIdCell);
+                        
+                        const userNameCell = document.createElement('td');
+                        userNameCell.textContent = user.userName;
+                        row.appendChild(userNameCell);
+                        
+                        const emailCell = document.createElement('td');
+                        emailCell.textContent = user.email;
+                        row.appendChild(emailCell);
+                        
+                        const birthdayCell = document.createElement('td');
+                        birthdayCell.textContent = user.birthday;
+                        row.appendChild(birthdayCell);
+                        
+                        const studentIdCell = document.createElement('td');
+                        studentIdCell.textContent = user.studentId;
+                        row.appendChild(studentIdCell);
+                        
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // 페이지가 로드될 때 사용자 목록을 불러옴
+        window.onload = function() {
+            fetchUsers();
+        };
+    </script>
+</body>
 </html>
