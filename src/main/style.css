@@ -1,0 +1,462 @@
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.header{
+    background-color: #ffffff;
+    width: 100%;
+    height: 142px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 0px 5px 5px gray;
+    z-index: 999;
+}
+
+.body{
+    background-color: #004e2b14;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+}
+
+.footer{
+    width: 862px;
+    height: 77px;
+    border: 2px solid #004e2b;
+    border-radius: 20px;
+    bottom: 42px;
+    position: fixed;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    left: 50%;
+    transform: translateX(-50%);
+
+    #question{
+        width: 700px;
+        height: 40px;
+        margin-left: 39px;
+        font-size: 27px;
+        border: 0px;
+    }
+    #question:focus {outline: none;}
+
+    #question::placeholder{
+        color: #000000;
+        opacity: 20%;
+    }
+
+    .sendImg{
+        margin-right: 39px;
+        cursor:pointer;
+    }
+}
+
+.langContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainImg{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.langContainer{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-left: 50px;
+    transform: translate(0, -50%);
+}
+
+.krenImg{
+    margin-left: 15px;
+}
+
+.menuImg{
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-right: 50px;
+    transform: translate(0, -50%);
+    cursor:pointer;
+}
+
+nav{
+    margin-right: -338px;
+    position: fixed;
+    height: 100vh;
+    box-shadow: 0px 0px 5px gray;
+    width: 338px;
+    top: 0%;
+    right: 0%;
+    background-color: #ffffff;
+    z-index: 1000;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    transition: 0.5s;
+    &.active {margin-right: 0px; box-shadow: -5px 0px 5px gray;}
+
+    .leftImg{
+        position: absolute;
+        cursor:pointer;
+        margin-top: 20px;
+        margin-left: 20px;
+    }
+
+    .menuMainImg{
+        position: absolute;
+        margin-top: 30px;
+        right: 50%;
+        transform: translate(50%, 0%);
+    }
+
+    .hideEle{
+        transition: 0.3s;
+    }
+
+    .login{
+        position: absolute;
+        margin-top: 240px;
+        right: 50%;
+        transform: translate(50%, 0%);
+        width: 274px;
+        height: 64px;
+        background-color: #004e2b;
+        opacity: 85%;
+        border: 0px;
+        border-radius: 5px;
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: bold;
+        cursor:pointer;
+        z-index: 999;
+        transition: margin-top 0.5s  ease-in-out;
+    }
+
+    .login.moved {
+        margin-top: 400px;
+    }
+
+    .login.hidden {
+        margin-top: 400px;
+        opacity: 0;
+        pointer-events: none;
+        visibility: hidden;
+    }
+
+    .menuHelp{
+        position: absolute;
+        margin-top: 325px;
+        right: 50%;
+        transform: translate(50%, 0%);
+        color: #757575;
+        font-size: 15px;
+        text-decoration: underline;
+        cursor:pointer;
+        transition: margin-top 0.5s ease-in-out;
+    }
+
+    .menuHelp.moved {
+        margin-top: 490px;
+    }
+
+    .menuz{
+        width: 338px;
+        top: 0%;
+        right: 0%;
+
+        transition: 0.3s;
+        
+
+        .linkSelect{
+            position: absolute;
+            margin-top: 400px;
+            right: 55%;
+            transform: translate(50%, 0%);
+            width:216px;
+            display:block;
+    
+            .guHp{
+                margin-bottom: 20px;
+                cursor:pointer;
+            }
+    
+            .schedule{
+                margin-bottom: 20px;
+                cursor:pointer;
+            }
+    
+            .webMail{
+                margin-bottom: 20px;
+                cursor:pointer;
+            }
+    
+            .nuriSys{
+                margin-bottom: 20px;
+                cursor:pointer;
+            }
+    
+            .certificate{
+                cursor:pointer;
+            }
+        }
+    
+        .menuLine{
+            position: absolute;
+            margin-top: 690px;
+            width: 338px;
+            border : 0px;
+            border-top: 1px solid #004e2b;
+            opacity: 50%;
+            box-shadow: 0px 0px 3px gray;
+        }
+    
+        .menuBottom{
+            position: absolute;
+            margin-top: 712px;
+            right: 55%;
+            transform: translate(25%, 0%);
+            width: 143px;
+    
+            .opinion{
+                margin-bottom: 20px;
+            }
+    
+            .help{
+                margin-bottom: 20px;
+            }
+    
+            .setting{
+                margin-bottom: 20px;
+            }
+        }
+
+        
+    }
+
+    .menuz.loginActive{
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .loginbox{
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        width: 338px;
+        top: 0%;
+        right: 0%;
+        transition: 0.5s;
+
+        #username{
+            position: absolute;
+            margin-top: 240px;
+            right: 50%;
+            transform: translate(50%, 0%);
+            border: 1px solid #004e2b;
+            border-radius: 5px;
+            opacity: 85%;
+            padding: 0px;
+            width: 274px;
+            height: 53px;
+        }
+
+        .idText{
+            position: absolute;
+            margin-top: 228px;
+            left: 16%;
+            width: 40px;
+            height: 25px;
+            transform: translate(0%, 0%);
+            background-color: #ffffff;
+            text-align: center;
+
+            a{
+                text-align: center;
+                font-size: 12px;
+                color: #004e2b;
+                opacity: 85%;
+                font-weight: bold;
+            }
+        }
+
+        #password{
+            position: absolute;
+            margin-top: 320px;
+            right: 50%;
+            transform: translate(50%, 0%);
+            border: 1px solid #004e2b;
+            border-radius: 5px;
+            opacity: 85%;
+            padding: 0px;
+            width: 274px;
+            height: 53px;
+        }
+
+        .pwdText{
+            position: absolute;
+            margin-top: 308px;
+            left: 16%;
+            width: 50px;
+            height: 25px;
+            transform: translate(0%, 0%);
+            background-color: #ffffff;
+            text-align: center;
+
+            a{
+                text-align: center;
+                font-size: 12px;
+                color: #004e2b;
+                opacity: 85%;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .loginbox.showed{
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        position: absolute;
+    }
+
+    .loginbox2{
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        width: 338px;
+        top: 0%;
+        right: 0%;
+    }
+
+    .loginbox2.showed2{
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        position: absolute;
+    }
+
+    .register{
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        width: 338px;
+        top: 0%;
+        right: 0%;
+        transition: 0.3s;
+
+        #regiUsername{
+            position: absolute;
+            margin-top: 240px;
+            right: 50%;
+            transform: translate(50%, 0%);
+            border: 1px solid #004e2b;
+            border-radius: 5px;
+            opacity: 85%;
+            padding: 0px;
+            width: 274px;
+            height: 53px;
+        }
+
+        .regiIdText{
+            position: absolute;
+            margin-top: 228px;
+            left: 16%;
+            width: 40px;
+            height: 25px;
+            transform: translate(0%, 0%);
+            background-color: #ffffff;
+            text-align: center;
+
+            a{
+                text-align: center;
+                font-size: 12px;
+                color: #004e2b;
+                opacity: 85%;
+                font-weight: bold;
+            }
+        }
+
+        #regiPassword{
+            position: absolute;
+            margin-top: 320px;
+            right: 50%;
+            transform: translate(50%, 0%);
+            border: 1px solid #004e2b;
+            border-radius: 5px;
+            opacity: 85%;
+            padding: 0px;
+            width: 274px;
+            height: 53px;
+        }
+
+        .regiPwdText{
+            position: absolute;
+            margin-top: 308px;
+            left: 16%;
+            width: 50px;
+            height: 25px;
+            transform: translate(0%, 0%);
+            background-color: #ffffff;
+            text-align: center;
+
+            a{
+                text-align: center;
+                font-size: 12px;
+                color: #004e2b;
+                opacity: 85%;
+                font-weight: bold;
+            }
+        }
+
+        #regiPwdCheck{
+            position: absolute;
+            margin-top: 400px;
+            right: 50%;
+            transform: translate(50%, 0%);
+            border: 1px solid #004e2b;
+            border-radius: 5px;
+            opacity: 85%;
+            padding: 0px;
+            width: 274px;
+            height: 53px;
+        }
+
+        .regiPwdCheckText{
+            position: absolute;
+            margin-top: 388px;
+            left: 16%;
+            width: 76px;
+            height: 25px;
+            transform: translate(0%, 0%);
+            background-color: #ffffff;
+            text-align: center;
+
+            a{
+                text-align: center;
+                font-size: 12px;
+                color: #004e2b;
+                opacity: 85%;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .register.regiShowed{
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        position: absolute;
+    }
+}
