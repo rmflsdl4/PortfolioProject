@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSingUpRequest {
-    private String userId;
-    private String password;
-    private String userName;
+    private String id;
+    private String pw;
+    private String name;
     private String email;
-    private String studentId;
-    private LocalDate birthday;
+    private int gender;
+    private LocalDate birthdate;
 }

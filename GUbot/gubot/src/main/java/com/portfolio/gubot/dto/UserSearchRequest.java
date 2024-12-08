@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserSearchRequest {
-    private String userName;
-    private LocalDate birthday;
-    private String studentId;
+    private String name;
+    private LocalDate birthdate;
+    private int gender;
     private String email;
 }

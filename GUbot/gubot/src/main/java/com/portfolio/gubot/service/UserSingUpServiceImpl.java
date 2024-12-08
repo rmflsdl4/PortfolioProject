@@ -3,7 +3,7 @@ package com.portfolio.gubot.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.portfolio.gubot.db.Users;
+import com.portfolio.gubot.db.User;
 import com.portfolio.gubot.dto.UserSingUpRequest;
 import com.portfolio.gubot.repository.UserRepository;
 
@@ -15,17 +15,17 @@ public class UserSingUpServiceImpl implements UserSingUpService {
 
     @Override
     public String signUp(UserSingUpRequest request) {
-        if (userRepository.existsById(request.getUserId())) {
+        if (userRepository.existsById(request.getId())) {
             return "사용불가한 아이디 입니다.";
         }
 
-        Users user = new Users(
-            request.getUserId(),
-            request.getPassword(),
-            request.getUserName(),
+        User user = new User(
+            request.getId(),
+            request.getPw(),
+            request.getName(),
             request.getEmail(),
-            request.getStudentId(),
-            request.getBirthday()
+            request.getGender(),
+            request.getBirthdate()
         );
 
         userRepository.save(user);

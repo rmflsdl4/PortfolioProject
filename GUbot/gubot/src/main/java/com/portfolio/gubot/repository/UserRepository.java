@@ -5,16 +5,15 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.portfolio.gubot.db.Users;
+import com.portfolio.gubot.db.User;
 
 
-public interface UserRepository extends JpaRepository<Users, String> {
+public interface UserRepository extends JpaRepository<User, String> {
 
     //로그인
-    Optional<Users> findByUserIdAndPassword(String userId, String password);
+    Optional<User> findByIdAndPw(String id, String pw);
 
     //이름, 이메일, 생년월일, 학번 데이터 찾기
-    Optional<Users> findByUserNameAndEmailAndBirthdayAndStudentId(
-        String userName, String email, LocalDate birthday, String studentId);
-
+    Optional<User> findByNameAndEmailAndBirthdateAndGender(
+        String Name, String email, LocalDate birthdate, int gender);
 }
