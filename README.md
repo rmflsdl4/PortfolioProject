@@ -1,4 +1,9 @@
 ![header](https://capsule-render.vercel.app/api?type=venom&color=074e2e&height=200&section=header&text=GU%20Bot&fontSize=45&fontColor=ffffff)
+
+# 📋 Based Model
+[🦙 meta-llama/Llama-3.1-8B](https://huggingface.co/meta-llama/Llama-3.1-8B)
+
+
 # 💡 Tips
 ### ✔️ 서버에 모델 다운로드 받기
 ![image](https://github.com/user-attachments/assets/553ae41a-0b18-478e-8c4b-1a085e7ddef9)  
