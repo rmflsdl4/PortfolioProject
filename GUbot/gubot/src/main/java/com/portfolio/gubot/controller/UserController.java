@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.portfolio.gubot.db.User;
 import com.portfolio.gubot.dto.UserLoginRequest;
 import com.portfolio.gubot.dto.UserSearchRequest;
-import com.portfolio.gubot.dto.UserSingUpRequest;
+import com.portfolio.gubot.dto.UserSignUpRequest;
 import com.portfolio.gubot.repository.UserRepository;
-import com.portfolio.gubot.service.UserSingUpService;
+import com.portfolio.gubot.service.UserSignUpService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +28,11 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
-    private UserSingUpService userService;
+    private UserSignUpService userService;
 
     //회원가입
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody UserSingUpRequest request) {
+    public ResponseEntity<String> signUp(@RequestBody UserSignUpRequest request) {
         String result = userService.signUp(request);
 
         if ("회원가입 성공!".equals(result)) {
