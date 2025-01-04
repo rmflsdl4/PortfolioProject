@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.portfolio.gubot.db.UserHasDepartment;
 
-public interface UserHasDepartmentRepository extends JpaRepository<UserHasDepartment,String> {
+public interface UserHasDepartmentRepository extends JpaRepository<UserHasDepartment,Integer> {
 
     
 }

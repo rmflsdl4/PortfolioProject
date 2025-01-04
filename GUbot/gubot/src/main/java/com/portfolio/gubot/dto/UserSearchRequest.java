@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class UserSearchRequest {
     private String name;
-    private LocalDate birthdate;
+    private LocalDate birthDate;
     private int gender;
     private String email;
 }

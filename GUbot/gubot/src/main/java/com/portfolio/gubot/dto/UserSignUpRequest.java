@@ -13,5 +13,5 @@ public class UserSignUpRequest {
     private String name;
     private String email;
     private int gender;
-    private LocalDate birthdate;
+    private LocalDate birthDate;
 }

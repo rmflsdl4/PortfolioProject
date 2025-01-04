@@ -3,6 +3,7 @@ package com.portfolio.gubot.db;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,6 +13,10 @@ import lombok.Data;
 @Data
 @Table(name = "answer_rating")
 public class AnswerRating {
+    @Id
+    @Column(name = "rating_num", nullable = false)
+    private int ratingNum;
+
     @Column(name = "rating", nullable = false)
     private int rating;
 

@@ -25,7 +25,7 @@ public class UserSignUpServiceImpl implements UserSignUpService {
             request.getName(),
             request.getEmail(),
             request.getGender(),
-            request.getBirthdate()
+            request.getBirthDate()
         );
 
         userRepository.save(user);

@@ -62,8 +62,8 @@ public class UserController {
     //이름, 이메일, 생년월일, 학번으로 찾기
     @PostMapping("/find")
     public User findUser(@RequestBody UserSearchRequest request) {
-        Optional<User> user = userRepository.findByNameAndEmailAndBirthdateAndGender(
-            request.getName(), request.getEmail(), request.getBirthdate(), request.getGender());
+        Optional<User> user = userRepository.findByNameAndEmailAndBirthDateAndGender(
+            request.getName(), request.getEmail(), request.getBirthDate(), request.getGender());
         
         if (user.isPresent()) {
             return user.get();
