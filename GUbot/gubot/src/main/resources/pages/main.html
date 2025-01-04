@@ -10,11 +10,12 @@
     <table id="userTable">
         <thead>
             <tr>
-                <th>User ID</th>
-                <th>User Name</th>
-                <th>Email</th>
-                <th>Birthday</th>
-                <th>Student ID</th>
+                <th>ID</th>
+                <th>PW</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th>GENDER</th>
+                <th>BIRTHDATE</th>
             </tr>
         </thead>
         <tbody>
@@ -41,25 +42,29 @@
                     data.forEach(user => {
                         const row = document.createElement('tr');
                         
-                        const userIdCell = document.createElement('td');
-                        userIdCell.textContent = user.userId;
-                        row.appendChild(userIdCell);
+                        const idCell = document.createElement('td');
+                        idCell.textContent = user.id;
+                        row.appendChild(idCell);
                         
-                        const userNameCell = document.createElement('td');
-                        userNameCell.textContent = user.userName;
-                        row.appendChild(userNameCell);
+                        const userPwCell = document.createElement('td');
+                        userPwCell.textContent = user.pw;
+                        row.appendChild(userPwCell);
+                        
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = user.name;
+                        row.appendChild(nameCell);
                         
                         const emailCell = document.createElement('td');
                         emailCell.textContent = user.email;
                         row.appendChild(emailCell);
                         
-                        const birthdayCell = document.createElement('td');
-                        birthdayCell.textContent = user.birthday;
-                        row.appendChild(birthdayCell);
-                        
-                        const studentIdCell = document.createElement('td');
-                        studentIdCell.textContent = user.studentId;
-                        row.appendChild(studentIdCell);
+                        const genderCell = document.createElement('td');
+                        genderCell.textContent = user.gender;
+                        row.appendChild(genderCell);
+
+                        const birthDateCell = document.createElement('td');
+                        birthDateCell.textContent = user.birthDate;
+                        row.appendChild(birthDateCell);
                         
                         tableBody.appendChild(row);
                     });
