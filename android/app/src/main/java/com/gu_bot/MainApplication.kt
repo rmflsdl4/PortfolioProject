@@ -18,14 +18,12 @@ class MainApplication : Application(), ReactApplication {
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
-              // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
+              // Packages that cannot be autolinked yet can be added manually here
+              // e.g. add(MyReactNativePackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
-
         override fun getUseDeveloperSupport(): Boolean = BuildConfig.DEBUG
-
         override val isNewArchEnabled: Boolean = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED
         override val isHermesEnabled: Boolean = BuildConfig.IS_HERMES_ENABLED
       }
@@ -40,5 +38,11 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
+  }
+
+  // 아래처럼 Kotlin 문법으로 오버라이드해야 합니다.
+  // 이 값을 false로 하면 Bridgeless 모드를 비활성화(기존 브리지)합니다.
+  override fun isBridgeless(): Boolean {
+      return false
   }
 }
