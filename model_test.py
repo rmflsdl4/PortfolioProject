@@ -7,11 +7,15 @@ from langchain import hub
 from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
-from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM, TextStreamer
 from langchain.llms import HuggingFacePipeline
 from langchain_core.prompts import ChatPromptTemplate
+import torch
+import sys
+import io
+from langchain_upstage import UpstageEmbeddings
 
-MODEL_PATH = "./finetuned_model"
+MODEL_PATH = "./llama3-8b-bllossom-gu-bot"
 CACHE_DIR = "./cache_model"
 
 VECTOR_STORE_PATH = "./vectorstore"
@@ -76,9 +80,9 @@ def create_huggingface_llm():
         stop_sequence=["<|eot_id|>", "<|end_of_text|>"],  # 종료 신호
         max_new_tokens=512,
         do_sample=True,
-        temperature=0.7,
+        temperature=0.1,
         top_p=0.95,
-        top_k=40,
+        top_k=10,
         repetition_penalty=1.2
     )
     
@@ -99,39 +103,101 @@ def main():
     
     # 프롬프트 로드
     #prompt = hub.pull("rlm/rag-prompt")
-    template = """Answer the question based only on the following context:
+
+    ### 프롬프트 버전 1 - 링크나 전화번호 같은 정보는 잘 가져오지 못하며 모르는 정보에 대해 할루시네이션 발생
+    
+#     template = """너는 광주대학교 학생들을 도와주는 유능한 지능형 AI 조수야. 학생의 질문에 친절하게 답해줘. 
+# # 답변 규칙:
+#  1. 모든 답변은 Markdown(마크업 언어)로 간결하게 3문장 이내로 답변해야 한다.
+#  2. '# Context'에 내용이 있어도 질문에 대한 내용이 없을 경우 답할 수 없으므로 '이해하지 못 했어요.'라고 무조건 답변해야 한다.
+#  3. 답변 시 '안녕하세요. GU봇 입니다.'로 시작해야 한다.
+#  4. 질문을 추가적으로 생성하지 않는다.
+
+
+# # 질문:
+# {question} 
+
+# # Context:
+# {context}
+
+# # 답변:
+# """
+
+
+    ### 프롬프트 버전 2 - 사이트 주소와 주어진 정보를 간략하게 요약, 답변 불가 질문에 대해서 할루시네이션 발생
+    
+    template = """You are an assistant for question-answering tasks. 
+    Use the following pieces of retrieved context to answer the question. 
+    If you don't know the answer, just say that you don't know. 
+    Please write your answer in a markdown format with the main points.
+    Answer in Korean.
+
+    Your answer **must** start with: "안녕하세요. **GU Bot**입니다."  
+
+    Make sure to only use information from the provided context. 
+    If the answer is not in the provided context, say **"답변할 수 없습니다!"** and do not generate any additional information.
+    
+    # Example Format:
+
+    # task1 (Answer if the information is found in the context):
+    안녕하세요. **GU Bot**입니다.
+    (brief summary of the answer based on the context)
+        
+    # task2 (Answer if the information is not found in the context):
+    답변할 수 없습니다!
+    
+    # Question:
+    {question} 
+
+    # Context:
     {context}
-    Question: {question}
+    
+    # Answer:
     """
+
+    
     
     prompt = ChatPromptTemplate.from_template(template)
-    # Ollama 모델 로드
-    #llm = ChatOllama(model="llama3.1:8b")
+    
     llm = create_huggingface_llm()
     
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 1})
     
-    # RAG 체인 구성
+
     rag_chain = (
-        #RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
-        {"context": retriever, "question": RunnablePassthrough()}
-        | prompt
+        prompt
         | llm
         | StrOutputParser()
     )
-    #rag_chain_with_source = RunnableParallel(
-    #    {"context": retriever, "question": RunnablePassthrough()}
-    #).assign(answer=rag_chain)
+    
+    while True:
+        con_data = ""
+        print("질문 입력:")
+        question = sys.stdin.readline().strip()
+    
+        if question == "":
+            print("테스트 종료")
+            break
+    
+        # 관련 문서 가져오기
+        retrieved_docs = retriever.get_relevant_documents(question)
+        for doc in retrieved_docs:
+            con_data += doc.page_content
+    
+        # RAG 체인을 스트리밍 방식으로 호출
+        response = rag_chain.invoke({"context": con_data, "question": question})
 
-    # 모델 테스트
-    query = "휴학 신청절차 알려줘"
-    response = rag_chain.invoke(query)
+        delimiter = "Answer:"
+        if delimiter in response:
+            result = response.split(delimiter, 1)[1]
+            print(result.strip())
 
-    print("----------------Answer----------------\n", response + "\n")
-    print("Sources:")
-    #sources = [doc.metadata for doc in response["context"]]
-    #for source in sources:
-     #   print(source)
+        print()
+        
+        docs_with_scores = vectorstore.similarity_search_with_score(question, k=1)
+        for doc, score in docs_with_scores:
+            print(f"Similarity Score: {score}")
+
 
 if __name__ == "__main__":
     main()
