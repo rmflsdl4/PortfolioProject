@@ -27,8 +27,20 @@ const InputPwdChkWrap = styled(InputWrap)`
     top: 400px;
 `;
 
-const SelectWrap = styled(InputWrap)`
+const InputMailWrap = styled(InputWrap)`
     top: 480px;
+`;
+
+const InputNameWrap = styled(InputWrap)`
+    top: 560px;
+`;
+
+const SelectWrap = styled(InputWrap)`
+    top: 640px;
+`;
+
+const InputBirthWrap = styled(InputWrap)`
+    top: 720px;
 `;
 
 const Input = styled.input.attrs({
@@ -62,6 +74,15 @@ const InputRegiPwdChk = styled(Input).attrs({
     type: 'password',
     maxLength: 20,
 })``;
+
+const InputRegiMail = styled(Input)``;
+
+const InputRegiName = styled(Input)``;
+
+const InputBirth = styled(Input).attrs({
+    type: 'date'
+})`
+`;
 
 const IdText = styled.div`
     position: absolute;
@@ -107,9 +128,24 @@ const RegiPwdCheckText = styled(PwdText)`
     width: 78px;
 `;
 
-const SelectText = styled(PwdText)`
+const RegiMailText = styled(PwdText)`
     top: 468px;
+    width: 40px;
+`;
+
+const RegiNameText = styled(PwdText)`
+    top: 548px;
     width: 28px;
+`;
+
+const SelectText = styled(PwdText)`
+    top: 628px;
+    width: 28px;
+`;
+
+const RegiBirthText = styled(PwdText)`
+    top: 708px;
+    width: 60px;
 `;
 
 const CustomSelect = styled.select`
@@ -117,7 +153,7 @@ const CustomSelect = styled.select`
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 242px;
+    width: 250px;
     height: 30px;
     font-size: 12px;
     border: 0;
@@ -134,7 +170,7 @@ const CustomSelect = styled.select`
 
 const RegiButton = styled.button`
     position: absolute;
-    top: 558px;
+    top: 808px;
     right: 50%;
     transform: translate(50%, 0%);
     width: 274px;
@@ -151,7 +187,7 @@ const RegiButton = styled.button`
 const LoginText = styled.a`
     position: absolute;
     width: 168px;
-    top: 642px;
+    top: 892px;
     right: 50%;
     transform: translate(50%, 0%);
     color: #757575;
@@ -161,6 +197,10 @@ const LoginText = styled.a`
     cursor: pointer;
 `;
 
+
+
+
+
 const RegisterForm = ({ showRegi, handleLoginText }) => {
     const { register, handleSubmit, reset } = useForm();
 
@@ -169,7 +209,10 @@ const RegisterForm = ({ showRegi, handleLoginText }) => {
         console.log('아이디:', data.regiUsername);
         console.log('비밀번호:', data.regiPassword);
         console.log('비밀번호 확인:', data.regiPwdCheck);
-        console.log('선택한 학과:', data.department);
+        console.log('이메일:', data.regiMail);
+        console.log('이름:', data.regiName);
+        console.log('성별:', data.sex);
+        console.log('생년월일:', data.birth);
         reset();
     };
 
@@ -200,15 +243,42 @@ const RegisterForm = ({ showRegi, handleLoginText }) => {
                     <a>비밀번호 확인</a>
                 </RegiPwdCheckText>
 
-                {/* 셀렉트 */}
+                {/* 이름 */}
+                <InputMailWrap>
+                    <InputRegiMail id="regiMail" {...register('regiMail', { required: true })} />
+                </InputMailWrap>
+                <RegiMailText>
+                    <a>이메일</a>
+                </RegiMailText>
+
+                {/* 이름 */}
+                <InputNameWrap>
+                    <InputRegiName id="regiName" {...register('regiName', { required: true })} />
+                </InputNameWrap>
+                <RegiNameText>
+                    <a>이름</a>
+                </RegiNameText>
+
+                {/* 성별 */}
                 <SelectWrap>
-                    <CustomSelect id="department" {...register('department', { required: true })}>
+                    <CustomSelect id="sex" {...register('sex', { required: true })}>
                         <option value="">눌러서 선택하세요</option>
-                        <option value="0">컴퓨터공학과</option>
-                        <option value="1">AI소프트웨어학과</option>
+                        <option value="0">남</option>
+                        <option value="1">여</option>
                     </CustomSelect>
                 </SelectWrap>
-                <SelectText><a>학과</a></SelectText>
+                <SelectText><a>성별</a></SelectText>
+
+                {/* 생년월일 */}
+                <InputBirthWrap>
+                    <InputBirth
+                        id="birth"
+                        {...register('birth', { required: true })}
+                    />
+                </InputBirthWrap>
+                <RegiBirthText>
+                    <a>생년월일</a>
+                </RegiBirthText>
 
                 <RegiButton type="submit">회원가입</RegiButton>
                 <LoginText onClick={handleLoginText}>이미 계정이 있으신가요?</LoginText>

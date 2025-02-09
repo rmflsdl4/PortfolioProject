@@ -83,14 +83,14 @@ const MenuLinks = () => {
 const MenuBottomSection = ({ showopinionSend, handleSettingClick }) => {
   return (
     <MenuBottom>
-        <BottomMenuItem onClick={showopinionSend}>
-            <OpinionIcon />
+        <BottomMenuItem >
+            <OpinionIcon onClick={showopinionSend}/>
         </BottomMenuItem>
-        <BottomMenuItem href="#">
-            <HelpIcon />
+        <BottomMenuItem >
+            <HelpIcon href="#" />
         </BottomMenuItem>
-        <BottomMenuItem onClick={handleSettingClick}>
-            <SettingIcon />
+        <BottomMenuItem >
+            <SettingIcon onClick={handleSettingClick} />
         </BottomMenuItem>
     </MenuBottom>
   );
