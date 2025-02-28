@@ -1,52 +1,50 @@
-//RegisterForm.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
+import { ProcessRegister } from "./ProcessRegister.jsx";
 
-// 스타일 컴포넌트
+// 오류 메시지 스타일
+const ErrorText = styled.p`
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
+    max-width: 274px;
+    white-space: normal;
+    margin: 0;
+`;
+
+const FormContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 240px;
+`;
+
 const InputWrap = styled.div`
-    position: absolute;
-    top: 240px;
-    right: 50%;
-    transform: translate(50%, 0%);
+    position: relative;
     border: 1px solid #004e2b;
     border-radius: 5px;
     opacity: 85%;
-    padding: 0px;
     width: 274px;
     height: 53px;
+    margin-top: 30px;  // 각 필드 간 간격을 30px로 설정 (margin-bottom에서 margin-top으로 변경)
+    display: flex;
+    flex-direction: column;
 `;
 
 const InputIdWrap = styled(InputWrap)``;
+const InputPwdWrap = styled(InputWrap)``;
+const InputPwdChkWrap = styled(InputWrap)``;
+const InputMailWrap = styled(InputWrap)``;
+const InputNameWrap = styled(InputWrap)``;
+const SelectWrap = styled(InputWrap)``;
+const InputBirthWrap = styled(InputWrap)``;
 
-const InputPwdWrap = styled(InputWrap)`
-    top: 320px;
-`;
-
-const InputPwdChkWrap = styled(InputWrap)`
-    top: 400px;
-`;
-
-const InputMailWrap = styled(InputWrap)`
-    top: 480px;
-`;
-
-const InputNameWrap = styled(InputWrap)`
-    top: 560px;
-`;
-
-const SelectWrap = styled(InputWrap)`
-    top: 640px;
-`;
-
-const InputBirthWrap = styled(InputWrap)`
-    top: 720px;
-`;
-
-const Input = styled.input.attrs({
-    type: 'text',
-    maxLength: 14,
-})`
+const Input = styled.input`
     padding: 0px;
     position: absolute;
     top: 50%;
@@ -57,56 +55,14 @@ const Input = styled.input.attrs({
     font-size: 16px;
     border: 0px;
     outline: none;
-
-    &:focus {
-        border: 0px;
-    }
 `;
 
 const InputRegiId = styled(Input)``;
-
-const InputRegiPwd = styled(Input).attrs({
-    type: 'password',
-    maxLength: 20,
-})``;
-
-const InputRegiPwdChk = styled(Input).attrs({
-    type: 'password',
-    maxLength: 20,
-})``;
-
+const InputRegiPwd = styled(Input).attrs({ type: 'password' })``;
+const InputRegiPwdChk = styled(Input).attrs({ type: 'password' })``;
 const InputRegiMail = styled(Input)``;
-
 const InputRegiName = styled(Input)``;
-
-const InputBirth = styled(Input).attrs({
-    type: 'date'
-})`
-`;
-
-const IdText = styled.div`
-    position: absolute;
-    top: 228px;
-    left: 18%;
-    width: 40px;
-    height: 25px;
-    background-color: #ffffff;
-    text-align: center;
-    z-index: 1;
-
-    a {
-        text-align: center;
-        font-size: 12px;
-        color: #004e2b;
-        opacity: 85%;
-        font-weight: bold;
-    }
-`;
-
-const PwdText = styled(IdText)`
-    width: 52px;
-    top: 308px;
-`;
+const InputBirth = styled(Input).attrs({ type: 'date' })``;
 
 const Register = styled.div`
     opacity: 0;
@@ -119,33 +75,6 @@ const Register = styled.div`
         visibility: visible;
         pointer-events: auto;
     }
-`;
-
-const RegiIdText = styled(IdText)``;
-const RegiPwdText = styled(PwdText)``;
-const RegiPwdCheckText = styled(PwdText)`
-    top: 388px;
-    width: 78px;
-`;
-
-const RegiMailText = styled(PwdText)`
-    top: 468px;
-    width: 40px;
-`;
-
-const RegiNameText = styled(PwdText)`
-    top: 548px;
-    width: 28px;
-`;
-
-const SelectText = styled(PwdText)`
-    top: 628px;
-    width: 28px;
-`;
-
-const RegiBirthText = styled(PwdText)`
-    top: 708px;
-    width: 60px;
 `;
 
 const CustomSelect = styled.select`
@@ -169,10 +98,6 @@ const CustomSelect = styled.select`
 `;
 
 const RegiButton = styled.button`
-    position: absolute;
-    top: 808px;
-    right: 50%;
-    transform: translate(50%, 0%);
     width: 274px;
     height: 64px;
     background-color: #26684B;
@@ -182,107 +107,142 @@ const RegiButton = styled.button`
     font-size: 20px;
     font-weight: bold;
     cursor: pointer;
+    margin-top: 20px;
 `;
 
 const LoginText = styled.a`
-    position: absolute;
-    width: 168px;
-    top: 892px;
-    right: 50%;
-    transform: translate(50%, 0%);
     color: #757575;
     font-size: 15px;
     text-decoration: underline;
-    text-underline-position : under;
+    text-underline-position: under;
     cursor: pointer;
+    margin-top: 15px;
 `;
 
-
-
-
+const IdText = styled.div`
+    position: absolute;
+    font-size: 12px;
+    color: #004e2b;
+    font-weight: bold;
+    top: -10px;
+    left: 40px;
+    background-color: #ffffff;
+`;
 
 const RegisterForm = ({ showRegi, handleLoginText }) => {
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset, formState: { errors, isSubmitted } } = useForm();
 
-    // 폼 제출 이벤트 핸들러
     const onSubmit = (data) => {
-        console.log('아이디:', data.regiUsername);
-        console.log('비밀번호:', data.regiPassword);
-        console.log('비밀번호 확인:', data.regiPwdCheck);
-        console.log('이메일:', data.regiMail);
-        console.log('이름:', data.regiName);
-        console.log('성별:', data.sex);
-        console.log('생년월일:', data.birth);
-        reset();
+        if (data.regiPassword !== data.regiPwdCheck) {
+            alert("비밀번호가 일치하지 않습니다.");
+            return;
+        }
+        ProcessRegister(data, reset);
     };
 
     return (
         <Register className={showRegi ? 'regiShowed' : ''}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                {/* 아이디 입력 */}
-                <InputIdWrap>
-                    <InputRegiId id="regiUsername" {...register('regiUsername', { required: true })} />
-                </InputIdWrap>
-                <RegiIdText>
-                    <a>아이디</a>
-                </RegiIdText>
+            <FormContainer>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    {/* 아이디 입력 */}
+                    <InputIdWrap>
+                        <IdText>아이디</IdText>
+                        <InputRegiId
+                            id="regiUsername"
+                            {...register('regiUsername', {
+                                required: "아이디를 입력하세요.",
+                                pattern: {
+                                    value: /^[a-z][a-z0-9]{5,23}$/,
+                                    message: "6~24자의 영어 소문자, 숫자만 가능합니다."
+                                }
+                            })}
+                        />
+                    </InputIdWrap>
+                    {errors.regiUsername && isSubmitted && <ErrorText>{errors.regiUsername.message}</ErrorText>}
 
-                {/* 비밀번호 입력 */}
-                <InputPwdWrap>
-                    <InputRegiPwd id="regiPassword" {...register('regiPassword', { required: true })} />
-                </InputPwdWrap>
-                <RegiPwdText>
-                    <a>비밀번호</a>
-                </RegiPwdText>
+                    {/* 비밀번호 입력 */}
+                    <InputPwdWrap>
+                        <IdText>비밀번호</IdText>
+                        <InputRegiPwd
+                            id="regiPassword"
+                            {...register('regiPassword', {
+                                required: "비밀번호를 입력하세요.",
+                                pattern: {
+                                    value: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,24}$/,
+                                    message: "영문, 숫자, 특수문자(!@#$%^&*) 포함 8~24자로 입력하세요."
+                                }
+                            })}
+                        />
+                    </InputPwdWrap>
+                    {errors.regiPassword && isSubmitted && <ErrorText>{errors.regiPassword.message}</ErrorText>}
 
-                {/* 비밀번호 확인 입력 */}
-                <InputPwdChkWrap>
-                    <InputRegiPwdChk id="regiPwdCheck" {...register('regiPwdCheck', { required: true })} />
-                </InputPwdChkWrap>
-                <RegiPwdCheckText>
-                    <a>비밀번호 확인</a>
-                </RegiPwdCheckText>
+                    {/* 비밀번호 확인 */}
+                    <InputPwdChkWrap>
+                        <IdText>비밀번호 확인</IdText>
+                        <InputRegiPwdChk
+                            id="regiPwdCheck"
+                            {...register('regiPwdCheck', { required: "비밀번호 확인을 입력하세요." })}
+                        />
+                    </InputPwdChkWrap>
+                    {errors.regiPwdCheck && isSubmitted && <ErrorText>{errors.regiPwdCheck.message}</ErrorText>}
 
-                {/* 이름 */}
-                <InputMailWrap>
-                    <InputRegiMail id="regiMail" {...register('regiMail', { required: true })} />
-                </InputMailWrap>
-                <RegiMailText>
-                    <a>이메일</a>
-                </RegiMailText>
+                    {/* 이메일 입력 */}
+                    <InputMailWrap>
+                        <IdText>이메일</IdText>
+                        <InputRegiMail
+                            id="regiMail"
+                            {...register('regiMail', {
+                                required: "이메일을 입력하세요.",
+                                pattern: {
+                                    value: /^[a-zA-Z0-9._]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                    message: "올바른 이메일 형식이 아닙니다."
+                                }
+                            })}
+                        />
+                    </InputMailWrap>
+                    {errors.regiMail && isSubmitted && <ErrorText>{errors.regiMail.message}</ErrorText>}
 
-                {/* 이름 */}
-                <InputNameWrap>
-                    <InputRegiName id="regiName" {...register('regiName', { required: true })} />
-                </InputNameWrap>
-                <RegiNameText>
-                    <a>이름</a>
-                </RegiNameText>
+                    {/* 이름 입력 */}
+                    <InputNameWrap>
+                        <IdText>이름</IdText>
+                        <InputRegiName
+                            id="regiName"
+                            {...register('regiName', {
+                                required: "이름을 입력하세요.",
+                                pattern: {
+                                    value: /^[가-힣a-zA-Z]+$/,
+                                    message: "한글과 영어만 입력 가능합니다."
+                                }
+                            })}
+                        />
+                    </InputNameWrap>
+                    {errors.regiName && isSubmitted && <ErrorText>{errors.regiName.message}</ErrorText>}
 
-                {/* 성별 */}
-                <SelectWrap>
-                    <CustomSelect id="sex" {...register('sex', { required: true })}>
-                        <option value="">눌러서 선택하세요</option>
-                        <option value="0">남</option>
-                        <option value="1">여</option>
-                    </CustomSelect>
-                </SelectWrap>
-                <SelectText><a>성별</a></SelectText>
+                    {/* 성별 선택 */}
+                    <SelectWrap>
+                        <IdText>성별</IdText>
+                        <CustomSelect id="sex" {...register('sex', { required: "성별을 선택하세요." })}>
+                            <option value="">눌러서 선택하세요</option>
+                            <option value="0">남</option>
+                            <option value="1">여</option>
+                        </CustomSelect>
+                    </SelectWrap>
+                    {errors.sex && isSubmitted && <ErrorText>{errors.sex.message}</ErrorText>}
 
-                {/* 생년월일 */}
-                <InputBirthWrap>
-                    <InputBirth
-                        id="birth"
-                        {...register('birth', { required: true })}
-                    />
-                </InputBirthWrap>
-                <RegiBirthText>
-                    <a>생년월일</a>
-                </RegiBirthText>
+                    {/* 생년월일 입력 */}
+                    <InputBirthWrap>
+                        <IdText>생년월일</IdText>
+                        <InputBirth
+                            id="birth"
+                            {...register('birth', { required: "생년월일을 입력하세요." })}
+                        />
+                    </InputBirthWrap>
+                    {errors.birth && isSubmitted && <ErrorText>{errors.birth.message}</ErrorText>}
 
-                <RegiButton type="submit">회원가입</RegiButton>
+                    <RegiButton type="submit">회원가입</RegiButton>
+                </form>
                 <LoginText onClick={handleLoginText}>이미 계정이 있으신가요?</LoginText>
-            </form>
+            </FormContainer>
         </Register>
     );
 };

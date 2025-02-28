@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
+import { ProcessLogin } from "./ProcessLogin.jsx";
 
 // 스타일 컴포넌트
 const LoginButton = styled.button`
@@ -143,14 +144,8 @@ const LoginForm = ({ show, show2, movedDown }) => {
         reset
     } = useForm();
 
-    // 폼 제출 이벤트 핸들러
-    const handleSubmitForm = (data) => {
-        console.log(data);
-        reset(); // 폼 입력 필드 초기화
-      };
-
   return (
-    <form onSubmit={handleSubmit(handleSubmitForm)}>
+    <form onSubmit={handleSubmit((data) => ProcessLogin(data, reset))}>
         {/* 로그인 아이디 & 비밀번호 입력 부분 */}
         <Loginbox className={show ? 'showed' : ''}>
             <InputIdWrap>
