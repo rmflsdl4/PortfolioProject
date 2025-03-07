@@ -15,7 +15,7 @@ import sys
 import io
 from langchain_upstage import UpstageEmbeddings
 
-MODEL_PATH = "./llama3-8b-bllossom-gu-bot"
+MODEL_PATH = "./llama3-8b-bllossom-gu-bot_v2"
 CACHE_DIR = "./cache_model"
 
 VECTOR_STORE_PATH = "./vectorstore"
@@ -102,60 +102,57 @@ def main():
 
     
     # 프롬프트 로드
-    #prompt = hub.pull("rlm/rag-prompt")
-
-    ### 프롬프트 버전 1 - 링크나 전화번호 같은 정보는 잘 가져오지 못하며 모르는 정보에 대해 할루시네이션 발생
+    template = """
+    <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+    You are a Gwangju University response expert who kindly answers student questions by following specific steps.
+    These steps must be followed in order without exception.
     
-#     template = """너는 광주대학교 학생들을 도와주는 유능한 지능형 AI 조수야. 학생의 질문에 친절하게 답해줘. 
-# # 답변 규칙:
-#  1. 모든 답변은 Markdown(마크업 언어)로 간결하게 3문장 이내로 답변해야 한다.
-#  2. '# Context'에 내용이 있어도 질문에 대한 내용이 없을 경우 답할 수 없으므로 '이해하지 못 했어요.'라고 무조건 답변해야 한다.
-#  3. 답변 시 '안녕하세요. GU봇 입니다.'로 시작해야 한다.
-#  4. 질문을 추가적으로 생성하지 않는다.
-
-
-# # 질문:
-# {question} 
-
-# # Context:
-# {context}
-
-# # 답변:
-# """
-
-
-    ### 프롬프트 버전 2 - 사이트 주소와 주어진 정보를 간략하게 요약, 답변 불가 질문에 대해서 할루시네이션 발생
+    Step 1:
+    Determine whether you can answer the student's question based on the provided context.
     
-    template = """You are an assistant for question-answering tasks. 
-    Use the following pieces of retrieved context to answer the question. 
-    If you don't know the answer, just say that you don't know. 
-    Please write your answer in a markdown format with the main points.
-    Answer in Korean.
-
-    Your answer **must** start with: "안녕하세요. **GU Bot**입니다."  
-
-    Make sure to only use information from the provided context. 
-    If the answer is not in the provided context, say **"답변할 수 없습니다!"** and do not generate any additional information.
+    Step 2:
+    If you determine that you cannot answer the question, end the response.
     
-    # Example Format:
-
-    # task1 (Answer if the information is found in the context):
-    안녕하세요. **GU Bot**입니다.
-    (brief summary of the answer based on the context)
-        
-    # task2 (Answer if the information is not found in the context):
-    답변할 수 없습니다!
+    Step 3:
+    If you determine that you can answer the question, provide an answer strictly based on the context provided by the student.
     
-    # Question:
-    {question} 
-
-    # Context:
-    {context}
+    Step 4:
+    When generating the answer, refer to the following example and maintain the same format:
+    Question:
+    마이크로디그리가 뭔가요?
+    Context:
+    마이크로디그리란?
+    * 영어로는 Micro Degree로 표현되며 MD는 약칭입니다.
+    * 세분화된 전문분야의 실무형 교육과 융복합 교육을 위하여 운영하는 소단위의 학위과정을 말합니다.
     
-    # Answer:
+    마이크로디그리 관련규정
+    * 학칙시행세칙 제50조의2
+    
+    마이크로디그리 구성 및 이수
+    * 마이크로디그리는 2개 이상의 학부(과) 전공 교과목 또는 1개 이상의 학부(과) 전공 교과목과 교양 교과목으로 구성하여야 합니다.
+    * 마이크로디그리는 최소 9~15학점을 이수하여야 합니다.
+    * 마이크로디그리 별로 이수해야 할 학점이 다릅니다.
+    
+    마이크로디그리 신청절차
+    * 별도의 신청절차 없이 해당 마이크로디그리를 구성하는 교과목을 이수할 경우 인정됩니다.
+    
+    마이크로디그리 담당 부서 및 연락처
+    * 교육혁신처: 062-670-2180, 2177
+    Answer:
+    마이크로디그리란 다음과 같습니다.
+    * 영어로는 Micro Degree로 표현되며 MD는 약칭입니다.
+    * 세분화된 전문분야의 실무형 교육과 융복합 교육을 위하여 운영하는 소단위의 학위과정을 말합니다.
+    
+    Step 5:
+    Self-check if you have followed Steps 1 through 4 in order, and once confirmed, output the response. You must answer in Korean only.
+    <|eot_id|>
+    <|start_header_id|>user<|end_header_id|>
+    Question: {question}
+    Context: {context}
+    Answer:
+    <|eot_id|>
+    <|start_header_id|>assistant<|end_header_id|>
     """
-
-    
     
     prompt = ChatPromptTemplate.from_template(template)
     
@@ -180,24 +177,21 @@ def main():
             break
     
         # 관련 문서 가져오기
-        retrieved_docs = retriever.get_relevant_documents(question)
-        for doc in retrieved_docs:
-            con_data += doc.page_content
+        docs_with_scores = vectorstore.similarity_search_with_score(question, k=1)
+        for doc, score in docs_with_scores:
+            if score > 0.4 and score < 1.0:
+                con_data += doc.page_content
+            print(f"Similarity Score: {score}")
     
         # RAG 체인을 스트리밍 방식으로 호출
         response = rag_chain.invoke({"context": con_data, "question": question})
 
-        delimiter = "Answer:"
+        delimiter = "<|start_header_id|>assistant<|end_header_id|>"
         if delimiter in response:
             result = response.split(delimiter, 1)[1]
             print(result.strip())
 
         print()
         
-        docs_with_scores = vectorstore.similarity_search_with_score(question, k=1)
-        for doc, score in docs_with_scores:
-            print(f"Similarity Score: {score}")
-
-
 if __name__ == "__main__":
     main()
