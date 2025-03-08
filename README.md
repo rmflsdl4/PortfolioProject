@@ -3,6 +3,8 @@
 # 📋 Based Model
 [🦙 meta-llama/Llama-3.1-8B](https://huggingface.co/meta-llama/Llama-3.1-8B)
 
+# 📢 GU Bot
+[Finetuned Model Link](https://huggingface.co/eawrsdftghuy/llama3.1-gu-bot-v2)
 
 # 💡 Tips
 ### ✔️ 서버에 모델 다운로드 받기
