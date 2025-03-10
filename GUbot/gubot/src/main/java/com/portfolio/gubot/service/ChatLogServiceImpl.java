@@ -1,5 +1,7 @@
 package com.portfolio.gubot.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +20,7 @@ public class ChatLogServiceImpl implements ChatLogService {
     @Autowired
     private ChatListRepository chatListRepository;
     
-    @Override
+    //채팅로그 저장
     public ChatLog saveChatLog(ChatLogRequest request){
         ChatList chatList = chatListRepository.findById(request.getChatListNum())
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방입니다."));
@@ -33,24 +35,12 @@ public class ChatLogServiceImpl implements ChatLogService {
 
         return chatLogRepository.save(chatLog);
     }
-    /*
-    public String signUp(UserSignUpRequest request) {
-        if (userRepository.existsById(request.getId())) {
-            return "사용불가한 아이디 입니다.";
-        }
 
-        User user = new User(
-            request.getId(),
-            request.getPw(),
-            request.getName(),
-            request.getEmail(),
-            request.getGender(),
-            request.getBirthDate()
-        );
+    //채팅로그 불러오기
+    public List<ChatLog> getChatLogs(int chatListNum) {
+        chatListRepository.findById(chatListNum)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방입니다."));
 
-        userRepository.save(user);
-        return "회원가입 성공!";
+        return chatLogRepository.findByChatListNum(chatListNum);
     }
-     */
-    
 }
