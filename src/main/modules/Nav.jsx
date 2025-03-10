@@ -1,5 +1,5 @@
 //Nav.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {    // 이미지 임포트
     LeftArrowImg,
@@ -11,6 +11,7 @@ import Menuz from './Menuz';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import OpinionSendPopUp from './OpinionSendPopUp';
+import { Profile, Logout } from './ImageComponents';
 
 // 스타일 컴포넌트
 const BG = styled.div`
@@ -260,8 +261,32 @@ const CustomRadioButton = styled.label`
     }
 `;
 
+const LoginSelect = styled.div`
+  position: absolute;
+  top: 260px;
+  left: 45px;
+  width: 216px;
+  display: block;
+`;
+
+const LoginItem = styled.a`
+  display: block;
+  margin-bottom: 20px;
+  cursor: pointer;
+`;
+
+const MenuLine = styled.div`
+  position: absolute;
+  top: 380px;
+  width: 338px;
+  border: 0px;
+  border-top: 1px solid #004e2b;
+  opacity: 50%;
+  box-shadow: 0px 0px 3px gray;
+`;
+
 const Nav = ({ menuOpen, setMenuOpen }) => {
-    const {     // NavLogic 인자값
+    const {     
         loginOpen,
         show,
         show2,
@@ -287,6 +312,21 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
         handleStyleChange,
     } = NavLogic({ setMenuOpen });
 
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const storedUserId = sessionStorage.getItem("userId");
+        if (storedUserId) {
+            setUserId(storedUserId);
+        }   
+    }, []);
+
+    const handleLogout = () => {
+        sessionStorage.removeItem("userId");
+        setUserId(null);
+        window.location.reload();
+    };
+
     return (
         <div>
             <NavWrapper $menuOpen={menuOpen}>
@@ -294,11 +334,27 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
                 <MainLogoImg />
 
                 <HideEle $hideMenuElements={hideMenuElements}>
-                    <LoginButton className={movedDown ? 'hidden' : ''} onClick={handleLoginClick }>로그인</LoginButton>
-                    <MenuHelp className={movedDown ? 'moved' : ''} onClick={handleMenuRegiClick}>GU BOT은 처음이신가요?</MenuHelp>
+                    {/* 로그인 상태 확인 */}
+                    {userId ? (
+                        <>
+                            <LoginSelect>
+                                <LoginItem href="#" onClick={() => alert("회원정보 Nav 연결 예정")}>
+                                    <Profile />
+                                </LoginItem>
+                                <button onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                                    <Logout />
+                                </button>
+                            </LoginSelect>
+                            <MenuLine />
+                        </>
+                    ) : (
+                        <>
+                            <LoginButton className={movedDown ? 'hidden' : ''} onClick={handleLoginClick}>로그인</LoginButton>
+                            <MenuHelp className={movedDown ? 'moved' : ''} onClick={handleMenuRegiClick}>GU BOT은 처음이신가요?</MenuHelp>
+                        </>
+                    )}
 
                     <Menuz showopinionSend={showopinionSend} loginOpen={loginOpen} handleSettingClick={handleSettingClick} />
-
                     <LoginForm show={show} show2={show2} movedDown={movedDown} />
                 </HideEle>
 
@@ -315,7 +371,7 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
                             <SettingAnime
                                 id="anime"
                                 checked={chatAnimation}
-                                onChange={() => setChatAnimation(prev => !prev)} // 값을 토글
+                                onChange={() => setChatAnimation(prev => !prev)} 
                             />
                             <SettingLabel />
                         </SettingToggleContainer>
@@ -343,13 +399,11 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
                         </RadioGroupContainer>
                     </SettingContainer2>
                 </>
-                
-
             </NavWrapper>
             <BG $menuOpen={menuOpen} onClick={menuLeft} />
             <OpinionSendPopUp opinionSend={opinionSend} showopinionSend={showopinionSend} />
         </div>
     );
-}
+};
 
 export default Nav;

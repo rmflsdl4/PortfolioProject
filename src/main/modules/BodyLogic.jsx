@@ -1,6 +1,9 @@
 // Body.jsx
 import React, { useState, useLayoutEffect, useRef, useEffect, useCallback  } from 'react';
 import Cookies from 'js-cookie';
+import { ProcessChat } from './ProcessChat';
+import { ProcessLog } from './ProcessLog';
+
 
 const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
@@ -11,6 +14,7 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     const chatAnimation = Cookies.get('chatAnimation') === 'true';  // 쿠키에서 chatAnimation 값을 가져옴
     const [isScrollAtBottom, setIsScrollAtBottom] = useState(true); // 스크롤이 가장 밑에 있는지 확인
     const [isScrolling, setIsScrolling] = useState(false); // smoothScrollToBottom 동작 여부
+    const [roomId, setRoomId] = useState(null); // 채팅방 번호
 
     // 입력창 높이 관련 로직
     const handleChange = (e) => {
@@ -59,9 +63,8 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
         }
     }, []);
 
-
     // 채팅
-    const addChat = () => {
+    const addChat = async () => {
         if (inputText.trim() && !isTyping) {
             const currentTime = new Date();
             const hours = currentTime.getHours();
@@ -84,7 +87,26 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
             setInputText('');
             setInputHeight(77);
             setIsTyping(true); // 타이핑 시작 상태로 설정
-            console.log(inputText)
+            
+            // 비동기 방식으로 처리 (임시)
+            if(!roomId){
+                await new Promise(resolve => {
+                    setRoomId(1);
+                    setTimeout(resolve, 0);
+                });
+
+                ProcessChat(inputText.trim());
+                await new Promise(resolve => setTimeout(resolve, 100));
+                ProcessLog(inputText.trim());
+                await new Promise(resolve => setTimeout(resolve, 100));
+                ProcessLog(replyChat.text);
+            }
+            else{
+                ProcessLog(inputText.trim());
+                await new Promise(resolve => setTimeout(resolve, 100));
+                ProcessLog(replyChat.text);
+            }
+            console.log(inputText);
         }
     };
 

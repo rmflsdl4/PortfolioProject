@@ -23,6 +23,8 @@ import pic17 from '../image/x.png';
 import pic18 from '../image/announce.png';
 import pic19 from '../image/love.png';
 import pic20 from '../image/group-10.jpg';
+import pic21 from '../image/group-11.png';
+import pic22 from '../image/group-12.png';
 
 // 스타일 컴포넌트
 
@@ -190,6 +192,20 @@ export const Love = styled.img.attrs({
 export const SettingIcon2 = styled.img.attrs({
   src: pic20,
   alt: '설정',
+})`
+  cursor: pointer;
+`;
+
+export const Profile = styled.img.attrs({
+  src: pic21,
+  alt: '프로필',
+})`
+  cursor: pointer;
+`;
+
+export const Logout = styled.img.attrs({
+  src: pic22,
+  alt: '로그아웃',
 })`
   cursor: pointer;
 `;
