@@ -1,7 +1,7 @@
 package com.portfolio.gubot.db;
 
 import java.math.BigInteger;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,18 +18,31 @@ import lombok.Data;
 @Data
 @Table(name="chat_log")
 public class ChatLog {
+
+    //채팅로그 번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="chat_log_num", nullable = false)
     private BigInteger chatLogNum;
 
+    //채팅 내용
     @Column(name="chat_content", nullable = false)
     private String chatContent;
 
+    //채팅 날짜+시간
     @Column(name="chat_date", nullable = false)
-    private Timestamp chatDate;
+    private LocalDateTime chatDate;
 
+    //외래키 참조 ChatList:chatListNum
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name="chat_list_num", referencedColumnName = "chat_list_num", nullable = false)
-    private ChatList chatList;
+    private ChatList chatListNum;
+
+    public ChatLog() {}
+
+    public ChatLog(String chatContent, LocalDateTime chatDate, ChatList chatListNum){
+        this.chatContent = chatContent;
+        this.chatDate = chatDate;
+        this.chatListNum = chatListNum;
+    }
 }

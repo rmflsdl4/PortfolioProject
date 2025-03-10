@@ -1,7 +1,7 @@
 package com.portfolio.gubot.dto;
 
 import java.math.BigInteger;
-import java.time.LocalDate;
+import java.time.LocalDateTime; 
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,6 @@ import lombok.Setter;
 public class ChatLogRequest {
     private BigInteger chatLogNum;
     private String chatContent;
-    private LocalDate chatDate;
+    private LocalDateTime chatDate;
     private int chatListNum;
 }

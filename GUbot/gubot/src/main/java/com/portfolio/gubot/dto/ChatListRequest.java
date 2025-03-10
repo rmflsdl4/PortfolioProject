@@ -8,5 +8,5 @@ import lombok.Setter;
 public class ChatListRequest {
     private int chatListNum;
     private String chatTitle;
-    private int userId;
+    private String userId;
 }
