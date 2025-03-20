@@ -41,6 +41,6 @@ public class ChatLogServiceImpl implements ChatLogService {
         chatListRepository.findById(chatListNum)
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방입니다."));
 
-        return chatLogRepository.findByChatListNum(chatListNum);
+        return chatLogRepository.findByChatListNum_ChatListNum(chatListNum);
     }
 }
