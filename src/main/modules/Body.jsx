@@ -1,16 +1,27 @@
 //Body.jsx
-import React, { useState, useEffect} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled, { keyframes } from "styled-components";
 import { 
     MainImg,
     LangImg,
     MenuImg,
     KrenImg,
-    SendImg
+    SendImg,
+    pic21,
+    pic22,
+    pic23,
+    pic24,
+    pic25,
+    pic26,
+    pic27,
+    pic28,
+    LightyImg,
+    LightyImg2
 } from './ImageComponents';
 import TextareaAutosize from 'react-textarea-autosize';
 import Cookies from 'js-cookie';
 import BodyLogic from './BodyLogic';
+import { marked } from 'marked';
 
 // 스타일 컴포넌트
 const HeaderWrapper = styled.div`
@@ -177,9 +188,47 @@ const ChatTime = styled.div`
 
 const MessageWithTime = styled.div`
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 860px;
+    position: relative;
+    left: -47px;
+`;
+
+const MessageContent = styled.div`
+    display: flex;
     flex-direction: column;
     align-items: center;
+    margin-left: 15px;
+`;
+
+const MessageContent2 = styled(MessageContent)`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     width: 860px;
+    transform: translateX(47px);
+`;
+
+const NameContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 860px;
+`;
+
+const LightyName = styled.a`
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 27px;
+    color: #004E2B;
+`;
+
+const LightyImgWrapper = styled.div`
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    width: 78px;
 `;
 
 const ReplyMessage = styled.div`
@@ -191,10 +240,23 @@ const ReplyMessage = styled.div`
     margin: 16px 0 0 10px;
     border-radius: 20px;
     word-wrap: break-word;
-    white-space: pre-wrap;
     min-height: 27px;
     max-width: 65%;
     align-self: flex-start;
+
+    p, h1, h2, h3, h4, h5, h6, span {
+        margin : 0;
+        padding : 0;
+    }
+    
+    ul, ol {
+        margin : 0;
+        padding-left: 20px;
+    }
+
+    li {
+        margin-bottom: 5px;
+    }
 `;
 
 const ReplyTime = styled.div`
@@ -203,6 +265,72 @@ const ReplyTime = styled.div`
     color: #000000;
     margin: 10px 0 0 10px; 
     align-self: flex-start;
+`;
+
+const WelcomeContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 860px;
+    transform: translateX(-93px);
+`;
+
+const WelcomeContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 15px;
+`;
+
+const WelcomeMessage = styled(ReplyMessage)`
+
+`;
+
+const WelcomeMessage2 = styled(WelcomeMessage)`
+    
+`;
+
+const WelcomeLink = ({ href, imgSrc, text }) => (
+    <LinkWrapper href={href} target="_blank">
+        <LinkImage src={imgSrc} alt={text} />
+        <LinkText>{text}</LinkText>
+    </LinkWrapper>
+);
+
+const WelcomeGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(4, 132px);
+    grid-template-rows: repeat(2, 125px);
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
+const LinkWrapper = styled.a`
+    width: 132px;
+    height: 125px;
+    border: solid 1px #004E2B;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background-color: white;
+`;
+
+const LinkImage = styled.img`
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+`;
+
+const LinkText = styled.span`
+    margin-top: 5px;
+    font-size: 17px;
+    color: #000000;
+    text-align: center;
 `;
 
 const ScrollToBottomButton = styled.button`
@@ -257,7 +385,7 @@ const AnimatedChar = styled.span`
 `;
 
 // 타이핑 효과를 위한 컴포넌트
-const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop }) => {
+const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) => {
     const [typedText, setTypedText] = useState(""); // 타이핑 중인 텍스트
     const [index, setIndex] = useState(0); // 타이핑할 위치
     const typingSpeed = 50; // 타이핑 속도 (ms)
@@ -266,35 +394,57 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop }) => {
     const [isTyped, setIsTyped] = useState(false); // 이미 텍스트가 타이핑되었는지 확인하는 상태
     const [finalMessage, setFinalMessage] = useState(null); // 최종 출력 메시지를 저장
 
+    const messageRef = useRef(null); // ReplyMessage에 대한 ref
+    const prevHeight = useRef(0);  // 이전 높이를 저장할 ref
+
+    // 마크다운 변환
+    const finalMessageHTML = marked(chat.text); // 마크다운을 HTML로 변환
+
+    // 텍스트의 각 문자를 AnimatedChar로 감싸서 애니메이션을 추가
+    const renderTypedText = useCallback((text) => {
+        const element = document.createElement('div');
+        element.innerHTML = text;
+    
+        const walk = (node) => {
+            if (node.nodeType === 3) {  // 텍스트 노드 처리
+                return node.textContent.split(/(\s+)/).map((char, idx) => 
+                    char.trim() === '' ? char : (
+                        <AnimatedChar key={idx} $selectedStyle={selectedStyle}>
+                            {char}
+                        </AnimatedChar>
+                    )
+                );
+            } else if (node.nodeType === 1) {  // 요소 노드 유지
+                const children = Array.from(node.childNodes).map(walk);
+                return React.createElement(node.nodeName.toLowerCase(), { key: node.key }, ...children);
+            }
+            return null;
+        };
+    
+        return walk(element);
+    }, [selectedStyle]);
+
+    // 타이핑 효과 처리
     useEffect(() => {
         if (chatAnimation && !isTyped) {
-            if (index < chat.text.length) {
-                const timeoutId = setTimeout(() => {
-                    setTypedText((prev) => prev + chat.text.slice(index, index + 3)); // 3글자씩 추가
+            const typingEffect = () => {
+                if (index < finalMessageHTML.length) {
+                    setTypedText((prev) => prev + finalMessageHTML.slice(index, index + 3)); // 3글자씩 추가
                     setIndex(index + 3);
-                }, typingSpeed);
-
-                return () => clearTimeout(timeoutId);
-            } else {
-                setIsTyped(true); // 타이핑 완료 상태로 설정
-                setFinalMessage(
-                    <ReplyMessage>
-                        {typedText.split("").map((char, idx) => (
-                            <AnimatedChar key={idx} $selectedStyle={selectedStyle}>
-                                {char}
-                            </AnimatedChar>
-                        ))}
-                    </ReplyMessage>
-                );
-                if (onTypingEnd) onTypingEnd();
-            }
+                } else {
+                    setIsTyped(true); // 타이핑 완료 상태로 설정
+                    setFinalMessage(renderTypedText(typedText)); // 애니메이션 적용된 텍스트
+                    if (onTypingEnd) onTypingEnd();
+                }
+            };
+            const timeoutId = setTimeout(typingEffect, typingSpeed);
+            return () => clearTimeout(timeoutId);
         } else if (!chatAnimation && !isTyped) {    // 애니메이션을 껐을 경우
             setIsTyped(true);
-            setFinalMessage(<ReplyMessage>{chat.text}</ReplyMessage>);
+            setFinalMessage(<div dangerouslySetInnerHTML={{ __html: finalMessageHTML }} />); // 애니메이션 없이 바로 출력
             if (onTypingEnd) onTypingEnd();
         }
-
-    }, [index, chat.text, onTypingEnd, chatAnimation, isTyped, typedText, selectedStyle]);
+    }, [index, finalMessageHTML, typedText, onTypingEnd, chatAnimation, isTyped, renderTypedText]);
 
     // 타이핑 중단 처리
     const handleStopTyping = () => {
@@ -302,19 +452,52 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop }) => {
         if (onTypingStop) onTypingStop(); // 중단 시 콜백 호출
     };
 
+    // ReplyMessage 크기 변경 감지
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            if (messageRef.current) {
+                const currentHeight = messageRef.current.scrollHeight; // 현재 높이
+                if (currentHeight !== prevHeight.current) {  // 이전 높이와 비교하여 변화가 있을 때만 실행
+                    prevHeight.current = currentHeight;  // 이전 높이를 갱신
+                    if (chatAnimation) {
+                        scrollToBottom(); // 높이가 변했을 때만 스크롤
+                    }
+                }
+            }
+        });
+
+        if (messageRef.current) {
+            observer.observe(messageRef.current, {
+                childList: true, // 자식 요소의 추가/삭제만 관찰
+                subtree: true, // 모든 자식 요소까지 감지
+                characterData: true, // 텍스트의 변경도 감지
+            });
+        }
+
+        return () => {
+            if (messageRef.current) {
+                observer.disconnect(); // cleanup
+            }
+        };
+    }, [chatAnimation, scrollToBottom]); // chatAnimation과 scrollToBottom이 변경될 때마다 다시 실행
+
     return (
         <>
             <MessageWithTime>
-                {finalMessage || (
-                    <ReplyMessage>
-                        {typedText.split("").map((char, idx) => (
-                            <AnimatedChar key={idx} $selectedStyle={selectedStyle}>
-                                {char}
-                            </AnimatedChar>
-                        ))}
+                <LightyImgWrapper>
+                    <LightyImg2 />
+                </LightyImgWrapper>
+                <MessageContent>
+                    <NameContainer>
+                        <LightyName>라이티</LightyName>
+                    </NameContainer>
+                    <ReplyMessage ref={messageRef}>
+                        <div className="reply-message">
+                            {finalMessage || renderTypedText(typedText)}
+                        </div>
                     </ReplyMessage>
-                )}
-                <ReplyTime>{chat.time}</ReplyTime>
+                    <ReplyTime>{chat.time}</ReplyTime>
+                </MessageContent>
             </MessageWithTime>
             {chatAnimation && !isTyped && (
                 <StopTypingButton onClick={handleStopTyping}>■</StopTypingButton>
@@ -353,14 +536,40 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
 
             <BodyBg />
             <ChatContainer ref={chatContainerRef} $inputHeight={inputHeight}>
+            <WelcomeContainer>
+                <LightyImg />
+                <WelcomeContent>
+                    <NameContainer>
+                        <LightyName>라이티</LightyName>
+                    </NameContainer>
+                    <WelcomeMessage>안녕하세요, 저는 광주대학교 챗봇 GU_Bot이에요! <br/> 무엇을 도와드릴까요?</WelcomeMessage>
+                    <WelcomeMessage2>
+                        <WelcomeGrid>
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=491" imgSrc={pic21} text="학사일정" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=498" imgSrc={pic22} text="장학안내" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=420" imgSrc={pic23} text="교내연락처" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/bbs/?b_id=gwangju_school_bus&site=gwangju&mn=422" imgSrc={pic24} text="통학버스" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=514" imgSrc={pic25} text="증명발급" />
+                            <WelcomeLink href="https://portal.gwangju.ac.kr/" imgSrc={pic26} text="등록금" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=474" imgSrc={pic27} text="수강정보" />
+                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=pvr&mn=871" imgSrc={pic28} text="캠퍼스 VR" />
+                        </WelcomeGrid>
+                    </WelcomeMessage2>
+                    <ReplyTime>{new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</ReplyTime>
+                </WelcomeContent>
+            </WelcomeContainer>
+            
                 {chats.map((chat, index) => (
                     <MessageWithTime key={index}>
                         {chat.isReply ? (
-                            <TypingEffectReply chat={chat} onTypingEnd={handleTypingEnd} onTypingStop={handleTypingStop} />
+                            <TypingEffectReply chat={chat} onTypingEnd={handleTypingEnd} onTypingStop={handleTypingStop} scrollToBottom={scrollToBottom} />
                         ) : (
                             <>
+                            <MessageContent2>
                                 <ChatMessage>{chat.text}</ChatMessage>
                                 <ChatTime>{chat.time}</ChatTime>
+                            </MessageContent2>
+                                
                             </>
                         )}
                         

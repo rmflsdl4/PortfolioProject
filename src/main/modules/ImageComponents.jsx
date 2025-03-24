@@ -1,5 +1,4 @@
 // ImageComponents.jsx
-import React from 'react';
 import styled from 'styled-components';
 
 // 이미지 소스 import
@@ -23,8 +22,18 @@ import pic17 from '../image/x.png';
 import pic18 from '../image/announce.png';
 import pic19 from '../image/love.png';
 import pic20 from '../image/group-10.jpg';
-import pic21 from '../image/group-11.png';
-import pic22 from '../image/group-12.png';
+import pic21 from '../image/image-11.png';
+import pic22 from '../image/image-10.png';
+import pic23 from '../image/image-9.png';
+import pic24 from '../image/image-8.png';
+import pic25 from '../image/image-13.png';
+import pic26 from '../image/image-14.png';
+import pic27 from '../image/image-15.png';
+import pic28 from '../image/image-16.png';
+import pic29 from '../image/image-6.png';
+import pic30 from '../image/image-7.png';
+import pic31 from '../image/group-11.png';
+import pic32 from '../image/group-12.png';
 
 // 스타일 컴포넌트
 
@@ -196,16 +205,32 @@ export const SettingIcon2 = styled.img.attrs({
   cursor: pointer;
 `;
 
-export const Profile = styled.img.attrs({
-  src: pic21,
-  alt: '프로필',
+export { pic21, pic22, pic23, pic24, pic25, pic26, pic27, pic28 };
+
+export const LightyImg = styled.img.attrs({
+  src: pic29,
+  alt: '라이티 이미지',
 })`
-  cursor: pointer;
+  
 `;
 
-export const Logout = styled.img.attrs({
-  src: pic22,
-  alt: '로그아웃',
+export const LightyImg2 = styled.img.attrs({
+  src: pic30,
+  alt: '라이티 이미지2',
 })`
-  cursor: pointer;
+  
 `;
+
+export const Profile = styled.img.attrs({
+    src: pic31,
+    alt: '프로필',
+  })`
+    cursor: pointer;
+  `;
+  
+  export const Logout = styled.img.attrs({
+    src: pic32,
+    alt: '로그아웃',
+  })`
+    cursor: pointer;
+  `;

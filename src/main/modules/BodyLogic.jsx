@@ -1,9 +1,8 @@
-// Body.jsx
-import React, { useState, useLayoutEffect, useRef, useEffect, useCallback  } from 'react';
+// BodyLogic.jsx
+import { useState, useLayoutEffect, useRef, useCallback  } from 'react';
 import Cookies from 'js-cookie';
 import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
-
 
 const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
@@ -56,12 +55,8 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     // 타이핑 효과를 중단시켰을 때
     const handleTypingStop = useCallback(() => {
         setIsTyping(false); // 타이핑 상태 종료
-        if (chatAnimation) {
-            if (chatContainerRef.current) {
-                smoothScrollToBottom();
-            }
-        }
     }, []);
+
 
     // 채팅
     const addChat = async () => {
@@ -78,7 +73,27 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
             };
 
             const replyChat = {
-                text: "1. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세 무궁화 삼천리 화려 강산 대한 사람 대한으로 길이 보전하세 2. 남산 위에 저 소나무 철갑을 두른 듯 바람 서리 불변함은 우리 기상일세 무궁화 삼천리 화려 강산 대한 사람 대한으로 길이 보전하세 3. 가을 하늘 공활한데 높고 구름 없이 밝은 달은 우리 가슴 일편단심일세 무궁화 삼천리 화려 강산 대한 사람 대한으로 길이 보전하세 4. 이 기상과 이 맘으로 충성을 다하여 괴로우나 즐거우나 나라 사랑하세 무궁화 삼천리 화려 강산 대한 사람 대한으로 길이 보전하세",
+                text: `### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+`,
                 time: formattedTime,
                 isReply: true
             };
@@ -111,25 +126,30 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     };
 
     // 채팅이 추가될 때 스크롤 최신 위치로 이동
+    const scrollToLatestMessage = () => {
+        if (chatContainerRef.current) {
+            const chatMessages = chatContainerRef.current.children;
+            if (chatMessages.length > 1) {
+                const lastMessage = chatMessages[chatMessages.length - 2]; // 마지막 메시지 요소
+                lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start' }); // 맨 위로 정렬
+            }
+        }
+    };
+    
+    // 채팅이 추가될 때 스크롤 최신 위치로 이동
     useLayoutEffect(() => {
         if (!isTyping) {
             if (!chatAnimation && chatContainerRef.current) {
-                smoothScrollToBottom();
+                scrollToLatestMessage();
             }
         }
-    }, [isTyping, chats]); // chats가 변경될 때마다 실행
-
+    }, [isTyping, chats]); // chats 변경 시 실행
+    
     useLayoutEffect(() => {
         if (chatAnimation && chatContainerRef.current) {
-            smoothScrollToBottom(); // 부드럽게 스크롤 이동
+            scrollToBottom(); // 부드럽게 스크롤 이동
         }
-    }, [chats]); // chats가 변경될 때마다 실행
-
-    useLayoutEffect(() => {
-        if (!chatAnimation && chatContainerRef.current) {
-            smoothScrollToBottom();
-        }
-    }, [isTyping, chats]);
+    }, [chats]);
 
     // 스크롤 위치를 감지하는 함수
     const handleScroll = () => {
