@@ -1,12 +1,25 @@
 import axios from 'axios';
 
 export const ProcessChat = async (text) => {
+    const formatDate = (date) => {
+        const pad = (num) => String(num).padStart(2, "0");
+      
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
+        const seconds = pad(date.getSeconds());
+      
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      };
+
     try {
         const requestData = {
             userId: sessionStorage.getItem("userId"),
-            chatTitle: text,
+            chatTitle: formatDate(new Date()),
         };
-        console.log(requestData);
+
         const response = await axios.post('http://localhost:8080/api/Chat/createChatList', requestData, {
             headers: {
                 'Content-Type': 'application/json',
@@ -14,7 +27,7 @@ export const ProcessChat = async (text) => {
         });
 
         if (response && response.status === 201) {
-            
+            return response.data.chatListNum;
         } else {
             alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
         }

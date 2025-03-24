@@ -341,9 +341,9 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
                                 <LoginItem href="#" onClick={() => alert("회원정보 Nav 연결 예정")}>
                                     <Profile />
                                 </LoginItem>
-                                <button onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer" }}>
+                                <LoginItem onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer" }}>
                                     <Logout />
-                                </button>
+                                </LoginItem>
                             </LoginSelect>
                             <MenuLine />
                         </>

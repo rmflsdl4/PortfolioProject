@@ -1,21 +1,14 @@
 import axios from 'axios';
 
-export const ProcessLog = async (text, roomId) => {
+export const ProcessChatLoad = async () => {
     try {
-        const requestData = {
-            chatContent: text,
-            chatDate: new Date(),
-            chatListNum: roomId,
-        };
-        console.log(requestData);
-        const response = await axios.post('http://localhost:8080/api/Chat/saveChatLog', requestData, {
+        const response = await axios.post('http://localhost:8080/api/Chat/getChatlists', sessionStorage.getItem("userId"), {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-
-        if (response && response.status === 201) {
-            
+        if (response && response.status === 200) {
+            console.log(response.data);
         } else {
             alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
         }
