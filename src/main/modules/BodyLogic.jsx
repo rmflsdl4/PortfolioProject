@@ -1,5 +1,5 @@
 // BodyLogic.jsx
-import { useState, useLayoutEffect, useRef, useCallback  } from 'react';
+import { useState, useLayoutEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
@@ -195,6 +195,7 @@ This is a markdown message with **bold** text and *italic* text.
         inputHeight,
         isScrollAtBottom,
         isScrolling,
+        isTyping,
         handleTypingEnd,
         handleTypingStop,
         handleChange,

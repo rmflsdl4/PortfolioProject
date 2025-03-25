@@ -31,7 +31,7 @@ const InputWrap = styled.div`
     opacity: 85%;
     width: 274px;
     height: 53px;
-    margin-top: 26px;  // 각 필드 간 간격을 30px로 설정 (margin-bottom에서 margin-top으로 변경)
+    margin-top: 26px;  // 각 필드 간 간격을 26px로 설정 (margin-bottom에서 margin-top으로 변경)
     display: flex;
     flex-direction: column;
 `;

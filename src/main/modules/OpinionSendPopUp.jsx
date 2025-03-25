@@ -164,42 +164,6 @@ const Submit = styled.button`
     color: #ffffff;
 `;
 
-const RadioGroupContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 0;
-    width: 169px;
-    position: absolute;
-    top: 114px;
-    left: 50%;
-    transform: translate(-50%, 0);
-`;
-
-const CustomRadioButton = styled.label`
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    font-size: 17px;
-    color: #004E2B;
-    font-weight: bold;
-
-    input[type='radio'] {
-        appearance: none;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        border: 1px solid #004E2B;
-        margin-right: 8px;
-        transition: background-color 0.2s ease;
-        cursor: pointer;
-
-        &:checked {
-            background-color: #004E2B;
-            border-color: #004E2B;
-        }
-    }
-`;
-
 const OpinionSendPopUp = ({ opinionSend, showopinionSend }) => {
     // 글자 수 상태 추가
     const [charCount, setCharCount] = useState(0);
@@ -215,12 +179,6 @@ const OpinionSendPopUp = ({ opinionSend, showopinionSend }) => {
         setCharCount(newValue.length);
     };
 
-    const [opinion, setOpinion] = useState('like'); //radio 기본값
-
-    const handleOpinionChange = (e) => {
-        setOpinion(e.target.value);
-    };
-
     //submit 클릭 시
     const handleSubmit = (e) => {
         e.preventDefault(); // 폼 제출 동작 방지
@@ -231,7 +189,6 @@ const OpinionSendPopUp = ({ opinionSend, showopinionSend }) => {
         
         alert('정상적으로 제출되었습니다.');
         console.log('Content :', textValue);
-        console.log('radio :', opinion);
         setTextValue(''); // 폼 제출 후 입력값 초기화
         setCharCount(0);
     };

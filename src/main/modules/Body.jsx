@@ -1,5 +1,5 @@
 //Body.jsx
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import styled, { keyframes } from "styled-components";
 import { 
     MainImg,
@@ -355,7 +355,7 @@ const StopTypingButton = styled.button`
     position: fixed;
     bottom: 58px;
     left: 50%;
-    transform: translateX(920%);
+    transform: translateX(700%);
     padding: 0 0 6px 0;
     font-size: 30px;
     color: #004e2b;
@@ -393,13 +393,13 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
     const selectedStyle = Cookies.get('selectedStyle'); // 쿠키에서 selectedStyle 값 가져옴
     const [isTyped, setIsTyped] = useState(false); // 이미 텍스트가 타이핑되었는지 확인하는 상태
     const [finalMessage, setFinalMessage] = useState(null); // 최종 출력 메시지를 저장
-
+  
     const messageRef = useRef(null); // ReplyMessage에 대한 ref
     const prevHeight = useRef(0);  // 이전 높이를 저장할 ref
-
-    // 마크다운 변환
-    const finalMessageHTML = marked(chat.text); // 마크다운을 HTML로 변환
-
+  
+    // 마크다운 변환을 메모이제이션하여 불필요한 계산 방지
+    const finalMessageHTML = useMemo(() => marked(chat.text), [chat.text]);
+  
     // 텍스트의 각 문자를 AnimatedChar로 감싸서 애니메이션을 추가
     const renderTypedText = useCallback((text) => {
         const element = document.createElement('div');
@@ -423,21 +423,21 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
     
         return walk(element);
     }, [selectedStyle]);
-
+  
     // 타이핑 효과 처리
     useEffect(() => {
         if (chatAnimation && !isTyped) {
             const typingEffect = () => {
                 if (index < finalMessageHTML.length) {
                     setTypedText((prev) => prev + finalMessageHTML.slice(index, index + 3)); // 3글자씩 추가
-                    setIndex(index + 3);
+                    setIndex((prev) => prev + 3); // 인덱스를 3씩 증가
                 } else {
                     setIsTyped(true); // 타이핑 완료 상태로 설정
                     setFinalMessage(renderTypedText(typedText)); // 애니메이션 적용된 텍스트
                     if (onTypingEnd) onTypingEnd();
                 }
             };
-            const timeoutId = setTimeout(typingEffect, typingSpeed);
+            const timeoutId = setTimeout(typingEffect, typingSpeed); // setTimeout을 사용하여 타이핑 속도 조절
             return () => clearTimeout(timeoutId);
         } else if (!chatAnimation && !isTyped) {    // 애니메이션을 껐을 경우
             setIsTyped(true);
@@ -445,13 +445,13 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
             if (onTypingEnd) onTypingEnd();
         }
     }, [index, finalMessageHTML, typedText, onTypingEnd, chatAnimation, isTyped, renderTypedText]);
-
+  
     // 타이핑 중단 처리
     const handleStopTyping = () => {
         setIsTyped(true); // 타이핑 완료 상태로 변경
         if (onTypingStop) onTypingStop(); // 중단 시 콜백 호출
     };
-
+  
     // ReplyMessage 크기 변경 감지
     useEffect(() => {
         const observer = new MutationObserver(() => {
@@ -460,27 +460,27 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
                 if (currentHeight !== prevHeight.current) {  // 이전 높이와 비교하여 변화가 있을 때만 실행
                     prevHeight.current = currentHeight;  // 이전 높이를 갱신
                     if (chatAnimation) {
-                        scrollToBottom(); // 높이가 변했을 때만 스크롤
+                    scrollToBottom(); // 높이가 변했을 때만 스크롤
                     }
                 }
             }
         });
-
+    
         if (messageRef.current) {
             observer.observe(messageRef.current, {
-                childList: true, // 자식 요소의 추가/삭제만 관찰
-                subtree: true, // 모든 자식 요소까지 감지
-                characterData: true, // 텍스트의 변경도 감지
+            childList: true, // 자식 요소의 추가/삭제만 관찰
+            subtree: true, // 모든 자식 요소까지 감지
+            characterData: true, // 텍스트의 변경도 감지
             });
         }
-
+    
         return () => {
             if (messageRef.current) {
                 observer.disconnect(); // cleanup
             }
         };
     }, [chatAnimation, scrollToBottom]); // chatAnimation과 scrollToBottom이 변경될 때마다 다시 실행
-
+  
     return (
         <>
             <MessageWithTime>
@@ -489,12 +489,12 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
                 </LightyImgWrapper>
                 <MessageContent>
                     <NameContainer>
-                        <LightyName>라이티</LightyName>
+                    <LightyName>라이티</LightyName>
                     </NameContainer>
                     <ReplyMessage ref={messageRef}>
-                        <div className="reply-message">
-                            {finalMessage || renderTypedText(typedText)}
-                        </div>
+                    <div className="reply-message">
+                        {finalMessage || renderTypedText(typedText)} {/* 애니메이션 처리된 텍스트 */}
+                    </div>
                     </ReplyMessage>
                     <ReplyTime>{chat.time}</ReplyTime>
                 </MessageContent>
@@ -504,7 +504,7 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
             )}
         </>
     );
-};
+  };
 
 
 const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
@@ -515,6 +515,7 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
         inputHeight,
         isScrollAtBottom,
         isScrolling,
+        isTyping,
         handleTypingEnd,
         handleTypingStop,
         handleChange,
@@ -579,14 +580,15 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
 
             <BottomWrap style={{ height: inputHeight + 46 }}>
                 <InputWrapper $inputHeight={inputHeight}>
-                    <QuestionInput 
+                    <QuestionInput
                         minRows="1"
                         maxRows="4"
-                        id="question" 
-                        placeholder="라이티에게 궁금한 것을 물어보세요 !" 
+                        id="question"
+                        placeholder={isTyping ? "답변 작성중입니다." : "라이티에게 궁금한 것을 물어보세요 !"}
                         value={inputText}
-                        onChange={handleChange} 
+                        onChange={handleChange}
                         onKeyDown={handleKeyDown}
+                        disabled={isTyping} // isTyped가 false일 때 비활성화
                     />
                     <SendImg onClick={handleSendClick} />
                 </InputWrapper>
