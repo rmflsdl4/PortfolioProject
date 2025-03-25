@@ -13,4 +13,5 @@ public class ChatLogRequest {
     private String chatContent;
     private LocalDateTime chatDate;
     private int chatListNum;
+    private int chatSender;
 }

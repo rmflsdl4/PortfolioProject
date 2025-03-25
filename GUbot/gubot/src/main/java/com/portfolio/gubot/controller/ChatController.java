@@ -1,6 +1,8 @@
 package com.portfolio.gubot.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,16 +30,21 @@ public class ChatController {
     @Autowired
     private ChatLogService chatLogService;
 
-    //채팅방 저장
+        //채팅방 저장
     @PostMapping("/createChatList")
-    public ResponseEntity<String> createChatList(@RequestBody ChatListRequest request) {
-        chatListService.createChatList(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("채팅방 생성");
+    public ResponseEntity<Map<String, Object>> createChatList(@RequestBody ChatListRequest request) {
+        ChatList chatList = chatListService.createChatList(request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("chatListNum", chatList.getChatListNum());
+ 
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     //채팅방 불러오기
     @PostMapping("/getChatlists")
     public List<ChatList> getChatLists(@RequestBody String userId) {
+        userId = userId.replace("\"", "").trim();
         return chatListService.getChatLists(userId);
     }
 

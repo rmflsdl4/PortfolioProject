@@ -31,6 +31,7 @@ public class ChatLogServiceImpl implements ChatLogService {
         chatLog.setChatContent(request.getChatContent());
         chatLog.setChatDate(request.getChatDate());
         chatLog.setChatListNum(chatList);
+        chatLog.setChatSender(request.getChatSender());
         
 
         return chatLogRepository.save(chatLog);

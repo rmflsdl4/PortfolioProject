@@ -33,6 +33,10 @@ public class ChatLog {
     @Column(name="chat_date", nullable = false)
     private LocalDateTime chatDate;
 
+    //채팅 수신자
+    @Column(name="chat_sender", nullable = false)
+    private int chatSender;
+
     //외래키 참조 ChatList:chatListNum
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name="chat_list_num", referencedColumnName = "chat_list_num", nullable = false)
