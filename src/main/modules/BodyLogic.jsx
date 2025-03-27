@@ -103,15 +103,17 @@ This is a markdown message with **bold** text and *italic* text.
             setInputHeight(77);
             setIsTyping(true); // 타이핑 시작 상태로 설정
             
-            if(!roomId){
-                const chatListNum = await ProcessChat(inputText.trim());
-                setRoomId(chatListNum);
-                await ProcessLog(inputText.trim(), chatListNum);
-                await ProcessLog(replyChat.text, chatListNum);
-            }
-            else{
-                await ProcessLog(inputText.trim(), roomId);
-                await ProcessLog(replyChat.text, roomId);
+            if(sessionStorage.getItem('chatListNum') != null){
+                if(!roomId){
+                    const chatListNum = await ProcessChat(inputText.trim());
+                    setRoomId(chatListNum);
+                    await ProcessLog(inputText.trim(), chatListNum);
+                    await ProcessLog(replyChat.text, chatListNum);
+                }
+                else{
+                    await ProcessLog(inputText.trim(), roomId);
+                    await ProcessLog(replyChat.text, roomId);
+                }
             }
         }
     };
