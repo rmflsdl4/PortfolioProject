@@ -3,6 +3,7 @@ import { useState, useLayoutEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
+import { ProcessLLM } from './ProcessLLM';
 
 const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
@@ -71,37 +72,21 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
                 time: formattedTime,
                 isReply: false
             };
+            setChats(prevChats => [...prevChats, newChat]); // 채팅 후 바로 화면에 출력
+
+            setInputText('');
+            setInputHeight(77);
 
             const replyChat = {
-                text: `### Hello, World!
-This is a markdown message with **bold** text and *italic* text.
-- List item 1
-- List item 2
-- List item 3
-### Hello, World!
-This is a markdown message with **bold** text and *italic* text.
-- List item 1
-- List item 2
-- List item 3
-### Hello, World!
-This is a markdown message with **bold** text and *italic* text.
-- List item 1
-- List item 2
-- List item 3
-### Hello, World!
-This is a markdown message with **bold** text and *italic* text.
-- List item 1
-- List item 2
-- List item 3
-`,
+                text: await ProcessLLM(newChat.text),
                 time: formattedTime,
                 isReply: true
             };
+            setChats(prevChats => [...prevChats, replyChat]); // 답변 받은 후 화면에 출력
 
-            setChats([...chats, newChat, replyChat]);
-            setInputText('');
-            setInputHeight(77);
             setIsTyping(true); // 타이핑 시작 상태로 설정
+            
+            
             
             if(sessionStorage.getItem('chatListNum') != null){
                 if(!roomId){
