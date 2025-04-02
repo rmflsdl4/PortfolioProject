@@ -34,6 +34,12 @@ import pic29 from '../image/image-6.png';
 import pic30 from '../image/image-7.png';
 import pic31 from '../image/group-11.png';
 import pic32 from '../image/group-12.png';
+import pic33 from '../image/chat.png';
+import pic34 from '../image/redTrashBin.png';
+import pic35 from '../image/chatList.png';
+import pic36 from '../image/chatMenu.png';
+import pic37 from '../image/newChat.png';
+import pic38 from '../image/rename.png';
 
 // 스타일 컴포넌트
 
@@ -233,4 +239,60 @@ export const Profile = styled.img.attrs({
     alt: '로그아웃',
   })`
     cursor: pointer;
+  `;
+
+  export const ChatImg = styled.img.attrs({
+    src: pic33,
+    alt: '채팅 메뉴',
+  })`
+    z-index: 800;
+    width: 30px;
+    height: 30px;
+  `;
+
+  export const DeleteImg = styled.img.attrs({
+    src: pic34,
+    alt: '삭제',
+  })`
+    width: 34px;
+    height: 34px;
+  `;
+
+  export const ChatListImg = styled.img.attrs({
+    src: pic35,
+    alt: '채팅',
+  })`
+    width: 30px;
+    height: 30px;
+  `;
+
+  export const ChatMenuImg = styled.img.attrs({
+    src: pic36,
+    alt: '채팅 설정',
+  })`
+    width: 30px;
+    height: 30px;
+    right: 18px;
+    position: absolute;
+    cursor: pointer;
+  `;
+
+  export const NewChatImg = styled.img.attrs({
+    src: pic37,
+    alt: '새 채팅',
+  })`
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 22px;
+    right: 20px;
+    cursor: pointer;
+  `;
+
+  export const RenameImg = styled.img.attrs({
+    src: pic38,
+    alt: '수정',
+  })`
+    width: 24px;
+    height: 24px;
   `;

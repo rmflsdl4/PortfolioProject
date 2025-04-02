@@ -16,7 +16,8 @@ import {
     pic27,
     pic28,
     LightyImg,
-    LightyImg2
+    LightyImg2,
+    ChatImg
 } from './ImageComponents';
 import TextareaAutosize from 'react-textarea-autosize';
 import Cookies from 'js-cookie';
@@ -46,6 +47,32 @@ const LangContainer = styled.div`
     transform: translate(0, -50%);
 `;
 
+const BodyWrapper = styled.div`
+`;
+
+const ChatImgWrapper = styled.div`
+    margin-left: ${props => props.$chatOpen ? '338px' : '0px'};
+    background-color: #ffffff;
+    z-index: 900;
+    width: 40px;
+    height: 108px;
+    position: fixed;
+    top: 190px;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-right: 1px solid #004e2b;
+    border-left: 1px solid #ffffff;
+    border-top: 1px solid #004e2b;
+    border-bottom: 1px solid #004e2b;
+    box-shadow: 3px 3px 3px gray;
+    transition: margin-left 0.5s;
+`;
+
 const BodyBg = styled.div`
     background-color: #EBF1EE;
     position: fixed;
@@ -61,9 +88,10 @@ const BodyBg = styled.div`
 const BottomWrap = styled.div`
     position: absolute;
     bottom: 0px;
-    width: 100%;
+    width: ${props => props.$chatOpen ? 'calc(100% - 338px)' : '100%'};
     background-color: #EBF1EE;
     position: fixed;
+    transition: 0.5s;
 `;
 
 const InputWrapper = styled.div`
@@ -354,7 +382,7 @@ const StopTypingButton = styled.button`
     height: 50px;
     position: fixed;
     bottom: 58px;
-    left: 50%;
+    left: ${props => props.$chatOpen ? 'calc(58.8%)' : '50%'};
     transform: translateX(700%);
     padding: 0 0 6px 0;
     font-size: 30px;
@@ -364,6 +392,7 @@ const StopTypingButton = styled.button`
     border-radius: 50%;
     cursor: pointer;
     z-index: 900;
+    transition: width, 0.5s;
 `;
 
 // 애니메이션 키프레임 정의
@@ -384,8 +413,31 @@ const AnimatedChar = styled.span`
     animation-fill-mode: forwards;
 `;
 
+const ChatLine3 = styled.div`
+    position: absolute;
+    opacity: 50%;
+    box-shadow: 0px 0px 3px gray;
+    border-right: 1px solid #004e2b;
+    width: 0;
+    top: 9px;
+    left: ${props => props.$chatOpen ? '0px' : '-1px'};
+    transform: translateX(-1px);
+    height: 90px;
+    z-index: 800;
+    transition: 0.5s;
+`;
+
+const Move = styled.div`
+    transition: 0.5s;
+    position: absolute;
+    height: 100vh;
+    bottom: 0;
+    right: 0;
+    width: ${props => props.$chatOpen ? 'calc(100% - 338px)' : '100%'};
+`;
+
 // 타이핑 효과를 위한 컴포넌트
-const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) => {
+const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom, chatOpen }) => {
     const [typedText, setTypedText] = useState(""); // 타이핑 중인 텍스트
     const [index, setIndex] = useState(0); // 타이핑할 위치
     const typingSpeed = 50; // 타이핑 속도 (ms)
@@ -393,7 +445,6 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
     const selectedStyle = Cookies.get('selectedStyle'); // 쿠키에서 selectedStyle 값 가져옴
     const [isTyped, setIsTyped] = useState(false); // 이미 텍스트가 타이핑되었는지 확인하는 상태
     const [finalMessage, setFinalMessage] = useState(null); // 최종 출력 메시지를 저장
-  
     const messageRef = useRef(null); // ReplyMessage에 대한 ref
     const prevHeight = useRef(0);  // 이전 높이를 저장할 ref
   
@@ -500,17 +551,16 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom }) 
                 </MessageContent>
             </MessageWithTime>
             {chatAnimation && !isTyped && (
-                <StopTypingButton onClick={handleStopTyping}>■</StopTypingButton>
+                <StopTypingButton onClick={handleStopTyping} $chatOpen={chatOpen}>■</StopTypingButton>
             )}
         </>
     );
   };
 
 
-const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
+const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats }) => {
     const {
         chatContainerRef,
-        chats,
         inputText,
         inputHeight,
         isScrollAtBottom,
@@ -522,7 +572,15 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
         handleKeyDown,
         handleSendClick,
         scrollToBottom
-    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop });
+    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats });
+
+    const questionInputRef = useRef(null);
+
+    useEffect(() => {
+        if (!isTyping && questionInputRef.current) {
+            questionInputRef.current.focus();  // isTyping이 true일 때 input에 포커스
+        }
+    }, [isTyping]);
 
     return (
         <div>
@@ -535,50 +593,59 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
                 <MenuImg onClick={() => { setMenuOpen(prevState => !prevState) }} />
             </HeaderWrapper>
 
-            <BodyBg />
-            <ChatContainer ref={chatContainerRef} $inputHeight={inputHeight}>
-            <WelcomeContainer>
-                <LightyImg />
-                <WelcomeContent>
-                    <NameContainer>
-                        <LightyName>라이티</LightyName>
-                    </NameContainer>
-                    <WelcomeMessage>안녕하세요, 저는 광주대학교 챗봇 GU_Bot이에요! <br/> 무엇을 도와드릴까요?</WelcomeMessage>
-                    <WelcomeMessage2>
-                        <WelcomeGrid>
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=491" imgSrc={pic21} text="학사일정" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=498" imgSrc={pic22} text="장학안내" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=420" imgSrc={pic23} text="교내연락처" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/bbs/?b_id=gwangju_school_bus&site=gwangju&mn=422" imgSrc={pic24} text="통학버스" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=514" imgSrc={pic25} text="증명발급" />
-                            <WelcomeLink href="https://portal.gwangju.ac.kr/" imgSrc={pic26} text="등록금" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=474" imgSrc={pic27} text="수강정보" />
-                            <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=pvr&mn=871" imgSrc={pic28} text="캠퍼스 VR" />
-                        </WelcomeGrid>
-                    </WelcomeMessage2>
-                    <ReplyTime>{new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</ReplyTime>
-                </WelcomeContent>
-            </WelcomeContainer>
+            <Move $chatOpen={chatOpen}>
+            <BodyWrapper>
+                <ChatImgWrapper $chatOpen={chatOpen} onClick={() => { setChatOpen(prevState => !prevState) }}>
+                    <ChatImg />
+                    <ChatLine3 $chatOpen={chatOpen}/>
+                </ChatImgWrapper>
+                <BodyBg />
+                <ChatContainer ref={chatContainerRef} $inputHeight={inputHeight}>
+                
+                <WelcomeContainer>
+                    <LightyImg />
+                    <WelcomeContent>
+                        <NameContainer>
+                            <LightyName>라이티</LightyName>
+                        </NameContainer>
+                        <WelcomeMessage>안녕하세요, 저는 광주대학교 챗봇 GU_Bot이에요! <br/> 무엇을 도와드릴까요?</WelcomeMessage>
+                        <WelcomeMessage2>
+                            <WelcomeGrid>
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=491" imgSrc={pic21} text="학사일정" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=498" imgSrc={pic22} text="장학안내" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=420" imgSrc={pic23} text="교내연락처" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/bbs/?b_id=gwangju_school_bus&site=gwangju&mn=422" imgSrc={pic24} text="통학버스" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=514" imgSrc={pic25} text="증명발급" />
+                                <WelcomeLink href="https://portal.gwangju.ac.kr/" imgSrc={pic26} text="등록금" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=gwangju&mn=474" imgSrc={pic27} text="수강정보" />
+                                <WelcomeLink href="https://www.gwangju.ac.kr/page/?site=pvr&mn=871" imgSrc={pic28} text="캠퍼스 VR" />
+                            </WelcomeGrid>
+                        </WelcomeMessage2>
+                        <ReplyTime>{new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</ReplyTime>
+                    </WelcomeContent>
+                </WelcomeContainer>
+                
+                    {chats.map((chat, index) => (
+                        <MessageWithTime key={index}>
+                            {chat.isReply ? (
+                                <TypingEffectReply chat={chat} onTypingEnd={handleTypingEnd} onTypingStop={handleTypingStop} scrollToBottom={scrollToBottom} chatOpen={chatOpen} />
+                            ) : (
+                                <>
+                                <MessageContent2>
+                                    <ChatMessage>{chat.text}</ChatMessage>
+                                    <ChatTime>{chat.time}</ChatTime>
+                                </MessageContent2>
+                                    
+                                </>
+                            )}
+                            
+                        </MessageWithTime>
+                    ))}
+                </ChatContainer>
+            </BodyWrapper>
             
-                {chats.map((chat, index) => (
-                    <MessageWithTime key={index}>
-                        {chat.isReply ? (
-                            <TypingEffectReply chat={chat} onTypingEnd={handleTypingEnd} onTypingStop={handleTypingStop} scrollToBottom={scrollToBottom} />
-                        ) : (
-                            <>
-                            <MessageContent2>
-                                <ChatMessage>{chat.text}</ChatMessage>
-                                <ChatTime>{chat.time}</ChatTime>
-                            </MessageContent2>
-                                
-                            </>
-                        )}
-                        
-                    </MessageWithTime>
-                ))}
-            </ChatContainer>
 
-            <BottomWrap style={{ height: inputHeight + 46 }}>
+            <BottomWrap style={{ height: inputHeight + 46 }} $chatOpen={chatOpen} >
                 <InputWrapper $inputHeight={inputHeight}>
                     <QuestionInput
                         minRows="1"
@@ -588,7 +655,8 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
                         value={inputText}
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
-                        disabled={isTyping} // isTyped가 false일 때 비활성화
+                        disabled={isTyping} // isTyping이 false일 때 비활성화
+                        ref={questionInputRef}
                     />
                     <SendImg onClick={handleSendClick} />
                 </InputWrapper>
@@ -600,6 +668,7 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
             >
                 🡫
             </ScrollToBottomButton>
+            </Move>
         </div>
     );
 };

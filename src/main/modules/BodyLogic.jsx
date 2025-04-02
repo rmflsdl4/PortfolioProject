@@ -5,10 +5,9 @@ import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
 import { ProcessLLM } from './ProcessLLM';
 
-const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
+const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats }) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
     const [inputText, setInputText] = useState(""); // 채팅 내용
-    const [chats, setChats] = useState([]); // 채팅 상태
     const [isTyping, setIsTyping] = useState(false); // 타이핑 상태 관리
     const chatContainerRef = useRef(null); // 스크롤 컨테이너 참조
     const chatAnimation = Cookies.get('chatAnimation') === 'true';  // 쿠키에서 chatAnimation 값을 가져옴
@@ -58,6 +57,7 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
         setIsTyping(false); // 타이핑 상태 종료
     }, []);
 
+    
 
     // 채팅
     const addChat = async () => {
@@ -78,7 +78,27 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
             setInputHeight(77);
 
             const replyChat = {
-                text: await ProcessLLM(newChat.text),
+                text: `### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+### Hello, World!
+This is a markdown message with **bold** text and *italic* text.
+- List item 1
+- List item 2
+- List item 3
+`,
                 time: formattedTime,
                 isReply: true
             };
@@ -86,7 +106,14 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop }) => {
 
             setIsTyping(true); // 타이핑 시작 상태로 설정
             
-            
+            if(isChatListCreated){
+                setChatList(prevList => [
+                    ...prevList,
+                    inputText.trim().length > 9 ? inputText.trim().slice(0, 9) + '...' : inputText.trim() // 채팅의 첫 10글자를 제목으로
+                ]);
+            }
+
+            setIsChatListCreated(false);
             
             if(sessionStorage.getItem('chatListNum') != null){
                 if(!roomId){
