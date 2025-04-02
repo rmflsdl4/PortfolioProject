@@ -5,10 +5,9 @@ import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
 import { ProcessLLM } from './ProcessLLM';
 
-const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats }) => {
+const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping }) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
     const [inputText, setInputText] = useState(""); // 채팅 내용
-    const [isTyping, setIsTyping] = useState(false); // 타이핑 상태 관리
     const chatContainerRef = useRef(null); // 스크롤 컨테이너 참조
     const chatAnimation = Cookies.get('chatAnimation') === 'true';  // 쿠키에서 chatAnimation 값을 가져옴
     const [isScrollAtBottom, setIsScrollAtBottom] = useState(true); // 스크롤이 가장 밑에 있는지 확인

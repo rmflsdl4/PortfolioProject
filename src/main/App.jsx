@@ -12,9 +12,13 @@ const App = () => {
     const [chatList, setChatList] = useState([]);
     const [isChatListCreated, setIsChatListCreated] = useState(true);
     const [chats, setChats] = useState([]);
+    
+    const [isTyping, setIsTyping] = useState(false); // 타이핑 상태 관리
+    
 
     const handleNewChatClick = () => {
         setChats([]);
+        setIsTyping(false);
         if (!isChatListCreated) {
             setIsChatListCreated(true); // 최초로 목록이 생성되었음을 표시
         }
@@ -23,7 +27,7 @@ const App = () => {
     return (
         <>
             <Header />
-            <Body setMenuOpen={setMenuOpen} chatOpen={chatOpen} setChatOpen={setChatOpen} setChatList={setChatList} chatList={chatList} isChatListCreated={isChatListCreated} setIsChatListCreated={setIsChatListCreated} chats={chats} setChats={setChats} />
+            <Body setMenuOpen={setMenuOpen} chatOpen={chatOpen} setChatOpen={setChatOpen} setChatList={setChatList} chatList={chatList} isChatListCreated={isChatListCreated} setIsChatListCreated={setIsChatListCreated} chats={chats} setChats={setChats} isTyping={isTyping} setIsTyping={setIsTyping} />
             <Footer />
             <Nav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
             <ChatSideBar chatOpen={chatOpen} setChatOpen={setChatOpen} chatList={chatList} setChatList={setChatList} isChatListCreated={isChatListCreated} handleNewChatClick={handleNewChatClick}  />

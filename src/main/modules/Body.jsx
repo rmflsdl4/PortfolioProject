@@ -558,21 +558,20 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom, ch
   };
 
 
-const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats }) => {
+const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping }) => {
     const {
         chatContainerRef,
         inputText,
         inputHeight,
         isScrollAtBottom,
         isScrolling,
-        isTyping,
         handleTypingEnd,
         handleTypingStop,
         handleChange,
         handleKeyDown,
         handleSendClick,
         scrollToBottom
-    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats });
+    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping });
 
     const questionInputRef = useRef(null);
 
@@ -655,7 +654,7 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatO
                         value={inputText}
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
-                        disabled={isTyping} // isTyping이 false일 때 비활성화
+                        disabled={isTyping} // isTyping이 true일 때 비활성화
                         ref={questionInputRef}
                     />
                     <SendImg onClick={handleSendClick} />
