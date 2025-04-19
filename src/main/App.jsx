@@ -15,6 +15,12 @@ const App = () => {
     
     const [isTyping, setIsTyping] = useState(false); // 타이핑 상태 관리
     
+    // ChatSideBar에서 채팅 로그를 받아오는 함수
+    const chatLog = (chat) => {
+        // console.log("App ", chat);
+        setChats(chat);
+    };
+    
 
     const handleNewChatClick = () => {
         setChats([]);
@@ -30,7 +36,7 @@ const App = () => {
             <Body setMenuOpen={setMenuOpen} chatOpen={chatOpen} setChatOpen={setChatOpen} setChatList={setChatList} chatList={chatList} isChatListCreated={isChatListCreated} setIsChatListCreated={setIsChatListCreated} chats={chats} setChats={setChats} isTyping={isTyping} setIsTyping={setIsTyping} />
             <Footer />
             <Nav menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-            <ChatSideBar chatOpen={chatOpen} setChatOpen={setChatOpen} chatList={chatList} setChatList={setChatList} isChatListCreated={isChatListCreated} handleNewChatClick={handleNewChatClick}  />
+            <ChatSideBar chatOpen={chatOpen} setChatOpen={setChatOpen} chatList={chatList} setChatList={setChatList} isChatListCreated={isChatListCreated} handleNewChatClick={handleNewChatClick} chatLog={chatLog} />
         </>
     );
 }

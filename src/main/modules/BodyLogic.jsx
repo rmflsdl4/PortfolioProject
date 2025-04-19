@@ -56,15 +56,19 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, 
         setIsTyping(false); // 타이핑 상태 종료
     }, []);
 
-    
-
     // 채팅
     const addChat = async () => {
         if (inputText.trim() && !isTyping) {
             const currentTime = new Date();
+            const year = currentTime.getFullYear();
+            const month = String(currentTime.getMonth() + 1).padStart(2, '0');
+            const day = String(currentTime.getDate()).padStart(2, '0');
             const hours = currentTime.getHours();
             const minutes = currentTime.getMinutes();
+            const seconds = String(currentTime.getSeconds()).padStart(2, '0');
+
             const formattedTime = `${hours >= 12 ? '오후' : '오전'} ${hours % 12 || 12}:${minutes.toString().padStart(2, '0')}`;
+            const formattedTimeForTitle = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;     // 채팅 목록에 표시할 시간 포맷
             
             const newChat = {
                 text: inputText.trim(),
@@ -105,13 +109,22 @@ This is a markdown message with **bold** text and *italic* text.
 
             setIsTyping(true); // 타이핑 시작 상태로 설정
             
+            // 채팅 치면 채팅 목록에 "첫 10글자" 를 제목으로 추가
+            // if(isChatListCreated){
+            //     setChatList(prevList => [
+            //         ...prevList,
+            //         inputText.trim().length > 9 ? inputText.trim().slice(0, 9) + '...' : inputText[0].trim()
+            //     ]);
+            // }
+
+            // 채팅 치면 채팅 목록에 "날짜" 를 제목으로 추가
             if(isChatListCreated){
                 setChatList(prevList => [
                     ...prevList,
-                    inputText.trim().length > 9 ? inputText.trim().slice(0, 9) + '...' : inputText.trim() // 채팅의 첫 10글자를 제목으로
+                    { chatTitle: formattedTimeForTitle }
                 ]);
             }
-
+            
             setIsChatListCreated(false);
             
             if(sessionStorage.getItem('chatListNum') != null){

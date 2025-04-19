@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { GuHpImg, ScheduleImg, WebMailImg, NuriSysImg, CertificateImg, OpinionIcon, HelpIcon, SettingIcon } from './ImageComponents';
 import { ProcessChatLoad } from './ProcessChatLoad';
+import { ProcessLogLoad } from './ProcessLogLoad';
 
 // 스타일 컴포넌트
 const MenuzDiv = styled.div`
@@ -93,9 +94,6 @@ const MenuBottomSection = ({ showopinionSend, handleSettingClick }) => {
         <BottomMenuItem >
             <SettingIcon onClick={handleSettingClick} />
         </BottomMenuItem>
-        
-        {/*테스트용 버튼*/}
-        <button onClick={ProcessChatLoad}>채팅방 로드</button>
     </MenuBottom>
   );
 };

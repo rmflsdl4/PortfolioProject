@@ -581,6 +581,22 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatO
         }
     }, [isTyping]);
 
+    const chatListLog = (chat) => {
+        console.log("Body ", chat);
+        // const newChat = {
+        //     text: inputText.trim(),
+        //     time: chat.chatDate,
+        //     isReply: false
+        // };
+        // setChats(prevChats => [...prevChats, newChat]);
+    }
+
+    useEffect(() => {
+        if (chats.length > 0) {
+            chatListLog(chats);
+        }
+    }, [chats]);
+
     return (
         <div>
             <HeaderWrapper>
@@ -626,16 +642,28 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatO
                 
                     {chats.map((chat, index) => (
                         <MessageWithTime key={index}>
-                            {chat.isReply ? (
-                                <TypingEffectReply chat={chat} onTypingEnd={handleTypingEnd} onTypingStop={handleTypingStop} scrollToBottom={scrollToBottom} chatOpen={chatOpen} />
-                            ) : (
-                                <>
-                                <MessageContent2>
-                                    <ChatMessage>{chat.text}</ChatMessage>
-                                    <ChatTime>{chat.time}</ChatTime>
+                            {chat.loadChat ? (  // loadChat키 값을 통해 채팅 로그를 불러오는지 확인
+                                <MessageContent2>   {/* 채팅 내역 표시 */}
+                                    <ChatMessage>{chat.chatContent}</ChatMessage>
+                                    <ChatTime>{chat.chatDate}</ChatTime>
+                                    <ReplyMessage>{chat.chatContent}</ReplyMessage>
+                                    <ReplyTime>{chat.chatDate}</ReplyTime>
                                 </MessageContent2>
-                                    
-                                </>
+                            ) : (
+                                chat.isReply ? (
+                                    <TypingEffectReply
+                                        chat={chat}
+                                        onTypingEnd={handleTypingEnd}
+                                        onTypingStop={handleTypingStop}
+                                        scrollToBottom={scrollToBottom}
+                                        chatOpen={chatOpen}
+                                    />
+                                ) : (
+                                    <MessageContent2>
+                                        <ChatMessage>{chat.text}</ChatMessage>
+                                        <ChatTime>{chat.time}</ChatTime>
+                                    </MessageContent2>
+                                )
                             )}
                             
                         </MessageWithTime>

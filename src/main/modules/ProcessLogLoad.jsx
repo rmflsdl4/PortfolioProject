@@ -1,24 +1,17 @@
-import axios from "axios";
+import axios from 'axios';
 
-export const ProcessLogin = async (data, reset) => {
+export const ProcessLogLoad = async (chatListNum) => {
     try {
-        const requestData = {
-            id: data.username,
-            pw: data.password,
-        };
-
-        const response = await axios.post('http://localhost:8080/api/User/login', requestData, {
+        const response = await axios.post('http://localhost:8080/api/Chat/getChatLogs', chatListNum, {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-
         if (response && response.status === 200) {
-            alert('로그인에 성공했습니다!');
-            sessionStorage.setItem("userId", requestData.id);
-            sessionStorage.setItem("chatListNum", "0");
-            reset();
-            window.location.reload();
+            // console.log(response.data);
+            return response.data;
+        } else {
+            alert('로그 불러오기에 실패했습니다.');
         }
     } catch (error) {
         if (error.response) {
@@ -27,11 +20,11 @@ export const ProcessLogin = async (data, reset) => {
                 case 400:
                     alert('잘못된 요청입니다. 입력한 정보를 확인해주세요.');
                     break;
-                case 401:
-                    alert('아이디 또는 비밀번호가 올바르지 않습니다.');
-                    break;
                 case 500:
                     alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                    break;
+                case 503:
+                    alert('서비스가 일시적으로 중단되었습니다. 잠시 후 다시 시도해주세요.');
                     break;
                 default:
                     alert('알 수 없는 오류가 발생했습니다.');
@@ -41,4 +34,4 @@ export const ProcessLogin = async (data, reset) => {
             alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
         }
     }
-};
+}

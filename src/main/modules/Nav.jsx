@@ -323,6 +323,7 @@ const Nav = ({ menuOpen, setMenuOpen }) => {
 
     const handleLogout = () => {
         sessionStorage.removeItem("userId");
+        sessionStorage.removeItem("chatListNum");
         setUserId(null);
         window.location.reload();
     };
