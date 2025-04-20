@@ -41,4 +41,30 @@ public class ChatListServiceImpl implements ChatListService {
         // 해당 유저가 속한 채팅목록 조회
         return chatListRepository.findByUser(user);
     }
+
+    // 채팅방 이름 변경
+    public ChatList updateChatListTitle(int chatListNum, String newTitle) {
+        ChatList chatList = chatListRepository.findById(chatListNum)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방입니다."));
+
+        chatList.setChatTitle(newTitle);
+        return chatListRepository.save(chatList);
+    }
+
+    // 채팅방 삭제
+    public void deleteChat(int chatListNum) {
+        ChatList chatList = chatListRepository.findById(chatListNum)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 채팅방입니다."));
+
+        chatListRepository.delete(chatList);
+    }
+
+    // 유저의 모든 채팅방 삭제
+    public void deleteAllChatLists(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        List<ChatList> chatLists = chatListRepository.findByUser(user);
+        chatListRepository.deleteAll(chatLists);
+    }
 }

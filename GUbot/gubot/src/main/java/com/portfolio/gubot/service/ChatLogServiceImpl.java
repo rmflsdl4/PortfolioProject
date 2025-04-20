@@ -27,7 +27,12 @@ public class ChatLogServiceImpl implements ChatLogService {
 
 
         ChatLog chatLog = new ChatLog();
-
+        System.out.println(request.getChatContent());
+        try {
+            System.out.println(request.getChatContent().getBytes("UTF-8").length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         chatLog.setChatContent(request.getChatContent());
         chatLog.setChatDate(request.getChatDate());
         chatLog.setChatListNum(chatList);

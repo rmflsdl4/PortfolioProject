@@ -51,15 +51,38 @@ public class ChatController {
     //채팅로그 저장
     @PostMapping("/saveChatLog")
     public ResponseEntity<String> saveChatLog(@RequestBody ChatLogRequest request) {
+        System.out.println(request);
         chatLogService.saveChatLog(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("채팅로그 저장");
     }
 
     //채팅로그 불러오기
     @PostMapping("/getChatLogs")
-    public List<ChatLog> geChatLogs(@RequestBody int chatListNum) {
+    public List<ChatLog> getChatLogs(@RequestBody Map<String, Integer> request) {
+        int chatListNum = request.get("chatListNum");
         return chatLogService.getChatLogs(chatListNum);
     }
     
-    
+    @PostMapping("/updateChatTitle")
+    public ResponseEntity<String> updateChatTitle(@RequestBody Map<String, Object> request) {
+        int chatListNum = (int) request.get("chatListNum");
+        String newTitle = (String) request.get("chatTitle");
+
+        chatListService.updateChatListTitle(chatListNum, newTitle);
+        return ResponseEntity.ok("채팅방 제목이 변경되었습니다.");
+    }
+
+    @PostMapping("/deleteChat")
+    public ResponseEntity<String> deleteChat(@RequestBody Map<String, Integer> request) {
+        int chatListNum = request.get("chatListNum");
+        chatListService.deleteChat(chatListNum);
+        return ResponseEntity.ok("채팅방이 삭제되었습니다.");
+    }
+
+    @PostMapping("/deleteAllChatList")
+    public ResponseEntity<String> deleteAllChatLists(@RequestBody String userId) {
+        userId = userId.replace("\"", "").trim();
+        chatListService.deleteAllChatLists(userId);
+        return ResponseEntity.ok("모든 채팅방이 삭제되었습니다.");
+    }
 }

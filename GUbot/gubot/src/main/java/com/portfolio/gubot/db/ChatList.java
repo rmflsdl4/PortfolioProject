@@ -27,7 +27,7 @@ public class ChatList {
     private String chatTitle;
 
     //외래키 참조 User:user_id
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName = "id", nullable = false)
     private User user;
 

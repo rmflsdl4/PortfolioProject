@@ -8,4 +8,7 @@ import com.portfolio.gubot.dto.ChatListRequest;
 public interface ChatListService {
     ChatList createChatList(ChatListRequest request);
     List<ChatList> getChatLists(String userId);
+    ChatList updateChatListTitle(int chatListNum, String newTitle);
+    void deleteChat(int chatListNum);
+    void deleteAllChatLists(String userId);
 }
