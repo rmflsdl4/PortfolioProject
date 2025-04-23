@@ -558,7 +558,7 @@ const TypingEffectReply = ({ chat, onTypingEnd, onTypingStop, scrollToBottom, ch
   };
 
 
-const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping }) => {
+const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping, roomID, setRoomID}) => {
     const {
         chatContainerRef,
         inputText,
@@ -571,7 +571,7 @@ const Body = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, chatO
         handleKeyDown,
         handleSendClick,
         scrollToBottom
-    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping });
+    } = BodyLogic({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping, roomID, setRoomID });
 
     const questionInputRef = useRef(null);
 

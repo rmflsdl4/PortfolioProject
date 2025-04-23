@@ -7,10 +7,17 @@ export const ProcessChatLoad = async () => {
                 'Content-Type': 'application/json',
             },
         });
+
         if (response && response.status === 200) {
-            console.log(response.data);
+            const chatList = response.data.map(chat => ({
+                chatListNum: chat.chatListNum,  // chatListNum 값 저장
+                chatTitle: chat.chatTitle       // chatTitle 값 저장
+            }));
+            
+            return chatList;
         } else {
-            alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+            alert('채팅 목록을 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.');
+            return [];  // 실패 시 빈 배열 반환
         }
     } catch (error) {
         if (error.response) {
@@ -32,5 +39,6 @@ export const ProcessChatLoad = async () => {
         } else {
             alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
         }
+        return [];  // 에러 발생 시 빈 배열 반환
     }
-}
+};

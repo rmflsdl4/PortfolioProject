@@ -3,17 +3,16 @@ import { useState, useLayoutEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { ProcessChat } from './ProcessChat';
 import { ProcessLog } from './ProcessLog';
+import { ProcessChatLoad } from './ProcessChatLoad';
 import { ProcessLLM } from './ProcessLLM';
 
-const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping }) => {
+const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, setChatList, chatList, isChatListCreated, setIsChatListCreated, chats, setChats, isTyping, setIsTyping, roomID, setRoomID}) => {
     const [inputHeight, setInputHeight] = useState(77); // 입력창 기본 높이
     const [inputText, setInputText] = useState(""); // 채팅 내용
     const chatContainerRef = useRef(null); // 스크롤 컨테이너 참조
     const chatAnimation = Cookies.get('chatAnimation') === 'true';  // 쿠키에서 chatAnimation 값을 가져옴
     const [isScrollAtBottom, setIsScrollAtBottom] = useState(true); // 스크롤이 가장 밑에 있는지 확인
     const [isScrolling, setIsScrolling] = useState(false); // smoothScrollToBottom 동작 여부
-    const [roomId, setRoomId] = useState(null); // 채팅방 번호
-
     // 입력창 높이 관련 로직
     const handleChange = (e) => {
         const newHeight = e.target.scrollHeight;
@@ -56,8 +55,6 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, 
         setIsTyping(false); // 타이핑 상태 종료
     }, []);
 
-    
-
     // 채팅
     const addChat = async () => {
         if (inputText.trim() && !isTyping) {
@@ -82,16 +79,13 @@ This is a markdown message with **bold** text and *italic* text.
 - List item 1
 - List item 2
 - List item 3
+
 ### Hello, World!
 This is a markdown message with **bold** text and *italic* text.
 - List item 1
 - List item 2
 - List item 3
-### Hello, World!
-This is a markdown message with **bold** text and *italic* text.
-- List item 1
-- List item 2
-- List item 3
+
 ### Hello, World!
 This is a markdown message with **bold** text and *italic* text.
 - List item 1
@@ -104,26 +98,17 @@ This is a markdown message with **bold** text and *italic* text.
             setChats(prevChats => [...prevChats, replyChat]); // 답변 받은 후 화면에 출력
 
             setIsTyping(true); // 타이핑 시작 상태로 설정
-            
-            if(isChatListCreated){
-                setChatList(prevList => [
-                    ...prevList,
-                    inputText.trim().length > 9 ? inputText.trim().slice(0, 9) + '...' : inputText.trim() // 채팅의 첫 10글자를 제목으로
-                ]);
-            }
-
-            setIsChatListCreated(false);
-            
-            if(sessionStorage.getItem('chatListNum') != null){
-                if(!roomId){
+            if(sessionStorage.getItem('userId') != null){
+                if(!roomID){
                     const chatListNum = await ProcessChat(inputText.trim());
-                    setRoomId(chatListNum);
-                    await ProcessLog(inputText.trim(), chatListNum);
-                    await ProcessLog(replyChat.text, chatListNum);
+                    setRoomID(chatListNum);
+                    await ProcessLog(inputText.trim(), chatListNum, 0);
+                    await ProcessLog(replyChat.text, chatListNum, 1);
+                    setChatList(await ProcessChatLoad());
                 }
                 else{
-                    await ProcessLog(inputText.trim(), roomId);
-                    await ProcessLog(replyChat.text, roomId);
+                    await ProcessLog(inputText.trim(), roomID, 0);
+                    await ProcessLog(replyChat.text, roomID, 1);
                 }
             }
         }

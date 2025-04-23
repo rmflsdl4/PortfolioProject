@@ -1,6 +1,11 @@
 //ChatSideBar.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { ProcessLogLoad } from './ProcessLogLoad';
+import { ProcessChatLoad } from './ProcessChatLoad';
+import { ProcessEditChatTitle } from './ProcessEditChatTitle';
+import { ProcessDeleteChat } from './ProcessDeleteChat';
+import { ProcessDeleteAllChat } from './ProcessDeleteAllChat';
 import {    // 이미지 임포트
     DeleteImg,
     ChatListImg,
@@ -292,7 +297,7 @@ const AlertText2 = styled(AlertText)`
     transform: translateX(50%);
 `;
 
-const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handleNewChatClick }) => {
+const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handleNewChatClick, chat, setChats, roomID, setRoomID }) => {
     const [activeDeleteMenuIndex, setActiveDeleteMenuIndex] = useState(null); // 활성화된 삭제 메뉴의 인덱스를 저장
     const [editingIndex, setEditingIndex] = useState(null); // 수정 중인 인덱스 저장
     const [newChatName, setNewChatName] = useState(''); // 새로 입력한 채팅 이름 저장
@@ -300,15 +305,44 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
     const [alertConfirm, setAlertConfirm] = useState(false);
 
     // 항목 삭제 함수
-    const handleDeleteClick = (index) => {
-        const updatedChatList = chatList.filter((_, i) => i !== index);
-        setChatList(updatedChatList); // 삭제된 후 상태 업데이트
-        setActiveDeleteMenuIndex(null); // 삭제 후 메뉴 숨기기
+    const handleDeleteClick = async (chatListNum) => {
+        if(window.confirm("정말로 삭제하시겠습니까?")) {
+            if(await ProcessDeleteChat(chatListNum)){
+                if(roomID === chatListNum){
+                    window.location.reload();
+                }
+                else{
+                    setChatList(await ProcessChatLoad());
+                }
+                alert("채팅방이 삭제되었습니다.");
+            }
+            else{
+                alert("채팅방 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            }
+        }
+        setActiveDeleteMenuIndex(null);
     };
 
     // 메뉴 클릭 시 메뉴 토글
     const handleMenuClick = (index) => {
+        console.log("index", index);
         setActiveDeleteMenuIndex(activeDeleteMenuIndex === index ? null : index);
+    };
+
+    const handleChatNameClick = async (chatListNum) => {
+        try {
+            const response = await ProcessLogLoad(chatListNum); // chatLogs 배열 가져오기
+    
+            const formattedChats = response.map(log => ({
+                text: log.chatContent,
+                time: new Date(log.chatDate).toLocaleString(), // 보기 좋게 날짜 포맷
+                isReply: log.chatSender === 1  // 1이면 AI, 0이면 사용자
+            }));
+            setRoomID(chatListNum); // roomId 설정
+            setChats(formattedChats);  // 상태 저장
+        } catch (err) {
+            console.error("채팅 로그 불러오기 실패:", err);
+        }
     };
 
     // 채팅 이름 수정 시작
@@ -319,14 +353,17 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
     };
 
     // 채팅 이름 변경 완료
-    const handleRenameSubmit = (index) => {
+    const handleRenameSubmit = async (index, chatListNum) => {
         // 만약 newChatName이 비어있다면, 이전 이름으로 되돌림
         if (newChatName.trim() === '') {
             setNewChatName(chatList[index]); // 빈값이면 원래 이름으로 되돌리기
         } else {
-            const updatedChatList = [...chatList];
-            updatedChatList[index] = newChatName; // 수정된 이름으로 배열 업데이트
-            setChatList(updatedChatList); // 상태 업데이트
+           if(await ProcessEditChatTitle(chatListNum, newChatName)){
+                setChatList(await ProcessChatLoad());
+           }
+           else{
+                alert("채팅방 이름 변경에 실패했습니다. 잠시 후 다시 시도해주세요.");
+           }
         }
         setEditingIndex(null); // 수정 모드 종료
     };
@@ -350,9 +387,11 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
     };
 
     const handleRemoveAllChats = () => {
+        ProcessDeleteAllChat();
         setChatList([]);
+        setRoomID(null);
+        setChats([]);
         setAlertConfirm(false);
-        handleNewChatClick();
     };
 
     return (
@@ -362,50 +401,52 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
                 <NewChatImg onClick={handleNewChatClick} />     {/* 새로운 채팅방 생성 버튼(현재는 현재 채팅 삭제만 하도록 되어있음) */}
                 <ChatLine />
                 <ChatListWrapper>
-                    {chatList.map((title, index) => (
-                        <ListWrapper
-                            key={index}
-                            className="chat-item"
-                            ref={el => listRefs.current[index] = el} // 각 ListWrapper에 ref 연결
+                {chatList.map((item, index) => (
+                    <ListWrapper
+                        key={index}
+                        className="chat-item"
+                        ref={el => listRefs.current[index] = el} // 각 ListWrapper에 ref 연결
+                    >
+                        <SelectArea>    {/* 채팅방(누르면 해당 채팅으로 이동하도록 수정예정) */}
+                            <ChatListImg />
+                            {editingIndex === index ? (
+                                // 수정 모드일 때는 입력 필드를 보여줌
+                                <EditInput
+                                    type="text"
+                                    value={newChatName}
+                                    onChange={handleInputChange}
+                                    onBlur={() => handleRenameSubmit(index, item.chatListNum)} // 블러(포커스 외) 시 수정 완료
+                                    onKeyDown={(e) => e.key === 'Enter' && handleRenameSubmit(index, item.chatListNum)} // 엔터키 시 수정 완료
+                                    autoFocus
+                                    placeholder="새로운 이름 입력"
+                                />
+                            ) : (
+                                // 수정 모드가 아닐 때는 텍스트를 출력하며, 9자리 이상은 '...'로 잘라서 표시
+                                <ChatNameText onClick={() => handleChatNameClick(item.chatListNum)}> {/* chatListNum 사용 */}
+                                    {truncateChatName(item.chatTitle)}
+                                </ChatNameText>
+                            )}
+                        </SelectArea>
+                        <ChatMenuImg onClick={() => handleMenuClick(index)} onMouseLeave={handleMouseLeaveMenu} />
+                        <ChatDeleteMenu
+                            $show={activeDeleteMenuIndex === index}
+                            style={{
+                                top: listRefs.current[index]?.offsetTop + 28 + 'px', // ListWrapper 위에 위치하도록 조정
+                            }}
+                            onMouseEnter={() => setActiveDeleteMenuIndex(index)}
+                            onMouseLeave={handleMouseLeaveMenu}
                         >
-                            <SelectArea>    {/* 채팅방(누르면 해당 채팅으로 이동하도록 수정예정) */}
-                                <ChatListImg />
-                                {editingIndex === index ? (
-                                    // 수정 모드일 때는 입력 필드를 보여줌
-                                    <EditInput
-                                        type="text"
-                                        value={newChatName}
-                                        onChange={handleInputChange}
-                                        onBlur={() => handleRenameSubmit(index)} // 블러(포커스 외) 시 수정 완료
-                                        onKeyDown={(e) => e.key === 'Enter' && handleRenameSubmit(index)} // 엔터키 시 수정 완료
-                                        autoFocus
-                                        placeholder="새로운 이름 입력"
-                                    />
-                                ) : (
-                                    // 수정 모드가 아닐 때는 텍스트를 출력하며, 9자리 이상은 '...'로 잘라서 표시
-                                    <ChatNameText>{truncateChatName(title)}</ChatNameText>
-                                )}
-                            </SelectArea>
-                            <ChatMenuImg onClick={() => handleMenuClick(index)} onMouseLeave={handleMouseLeaveMenu} />
-                            <ChatDeleteMenu
-                                $show={activeDeleteMenuIndex === index}
-                                style={{
-                                    top: listRefs.current[index]?.offsetTop + 28 + 'px', // ListWrapper 위에 위치하도록 조정
-                                }}
-                                onMouseEnter={() => setActiveDeleteMenuIndex(index)}
-                                onMouseLeave={handleMouseLeaveMenu}
-                            >
-                                <RenameWrapper onClick={() => handleRenameClick(index, title)}>     {/* 채팅 이름 바꾸기 버튼 */}
-                                    <RenameImg />
-                                    <RenameText>이름 바꾸기</RenameText>
-                                </RenameWrapper>
-                                <DeleteWrapper onClick={() => handleDeleteClick(index)}>    {/* 채팅 삭제 버튼 */}
-                                    <DeleteImg2 />
-                                    <DeleteText>삭제</DeleteText>
-                                </DeleteWrapper>
-                            </ChatDeleteMenu>
-                        </ListWrapper>
-                    ))}
+                            <RenameWrapper onClick={() => handleRenameClick(index, item.chatTitle)}> {/* chatTitle 사용 */}
+                                <RenameImg />
+                                <RenameText>이름 바꾸기</RenameText>
+                            </RenameWrapper>
+                            <DeleteWrapper onClick={() => handleDeleteClick(item.chatListNum)}>    {/* 채팅 삭제 버튼 */}
+                                <DeleteImg2 />
+                                <DeleteText>삭제</DeleteText>
+                            </DeleteWrapper>
+                        </ChatDeleteMenu>
+                    </ListWrapper>
+                ))}
                 </ChatListWrapper>
                 <ChatLine2 />
                 <RemoveAllWrapper $isClickable={chatList.length > 0} onClick={() => chatList.length > 0 && setAlertConfirm(prevState => !prevState)}>

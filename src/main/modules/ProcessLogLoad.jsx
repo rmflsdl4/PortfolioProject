@@ -1,23 +1,23 @@
 import axios from 'axios';
 
-export const ProcessLog = async (text, roomID, sender) => {
+export const ProcessLogLoad = async (chatListNum) => {
     try {
         const requestData = {
-            chatContent: text,
-            chatDate: new Date(),
-            chatListNum: roomID,
-            chatSender: sender,
+            chatListNum: chatListNum,
         };
-        const response = await axios.post('http://localhost:8080/api/Chat/saveChatLog', requestData, {
+
+        const response = await axios.post('http://localhost:8080/api/Chat/getChatLogs', requestData, {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
 
-        if (response && response.status === 201) {
-            
+        if (response && response.status === 200) {
+            const chatLogs = response.data;
+            return chatLogs;
         } else {
-            alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+            alert('채팅 목록을 가져오는 데 실패했습니다. 잠시 후 다시 시도해주세요.');
+            return [];  // 실패 시 빈 배열 반환
         }
     } catch (error) {
         if (error.response) {
@@ -39,5 +39,6 @@ export const ProcessLog = async (text, roomID, sender) => {
         } else {
             alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.');
         }
+        return [];  // 에러 발생 시 빈 배열 반환
     }
-}
+};

@@ -93,9 +93,6 @@ const MenuBottomSection = ({ showopinionSend, handleSettingClick }) => {
         <BottomMenuItem >
             <SettingIcon onClick={handleSettingClick} />
         </BottomMenuItem>
-        
-        {/*테스트용 버튼*/}
-        <button onClick={ProcessChatLoad}>채팅방 로드</button>
     </MenuBottom>
   );
 };
