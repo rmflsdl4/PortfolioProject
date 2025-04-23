@@ -13,6 +13,8 @@ import {    // 이미지 임포트
     NewChatImg,
     RenameImg
 } from './ImageComponents';
+import { ProcessChatLoad } from './ProcessChatLoad';
+import { ProcessLogLoad } from './ProcessLogLoad';
 
 const ChatMenuWrapper = styled.nav`
     margin-left: ${props => props.$chatOpen ? '0px' : '-338px'};
@@ -129,7 +131,6 @@ const RemoveAllWrapper = styled.div`
     opacity: ${props => (props.$isClickable ? '1' : '0.3')};
 `;
 
-
 const RemoveAllText = styled(ChatListText)`
     font-size: 25px;
     font-weight: bold;
@@ -197,7 +198,7 @@ const DeleteWrapper = styled.div`
 const DeleteImg2 = styled(DeleteImg)`
     width: 30px;
     height: 30px;
-  `;
+`;
 
 const DeleteText = styled.a`
     margin-left: 5px;
@@ -303,6 +304,7 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
     const [newChatName, setNewChatName] = useState(''); // 새로 입력한 채팅 이름 저장
     const listRefs = useRef([]); // ListWrapper의 각 요소에 대한 ref 배열
     const [alertConfirm, setAlertConfirm] = useState(false);
+    const [chatLogData, setChatLogData] = useState({}); // 채팅방에 맞는 채팅 로그 저장
 
     // 항목 삭제 함수
     const handleDeleteClick = async (chatListNum) => {
@@ -376,7 +378,7 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
     // 이름이 9자리 이상일 경우 앞 9자리 + '...'로 변경
     const truncateChatName = (name) => {
         if (name.length > 9) {
-            return name.slice(0, 9) + '...'; // 9자리 이상일 경우 앞 9자리만 표시하고 '...' 추가
+            return name.slice(0, 16) + '...'; // 9자리 이상일 경우 앞 9자리만 표시하고 '...' 추가 // 날짜 시 분 까지 보이게 16으로 수정
         }
         return name;
     };
@@ -393,6 +395,74 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
         setChats([]);
         setAlertConfirm(false);
     };
+
+    // 채팅 목록 불러옴 (채팅 목록)
+    const chatListLoad = async () => {
+        if (sessionStorage.getItem('userId') != null) { // 유저 아이디가 존재할 때만 채팅 목록 가져옴
+            const chatListData = await ProcessChatLoad();
+            // console.log("채팅 목록:", chatListData);
+            // chatLogLoad(chatList.chatListNum);
+            setChatList(chatListData);
+        }
+    };
+
+    // 채팅 목록 가져오기
+    useEffect(() => {
+        const fetchData = async () => {
+            await chatListLoad(); // 채팅 목록 가져옴
+        };
+        fetchData();    //비동기 함수 fetchData 호출
+    }, []);
+
+    // // 채팅 로그 불러옴 (각 채팅에 맞는 채팅 내역)
+    // const chatLogLoad = async (chatListNum) => {
+    //     try {
+    //         const chatLog = await ProcessLogLoad(chatListNum);
+    //         if (chatLog && chatLog.length > 0) {
+    //             setChatLogData(prevState => ({
+    //                 ...prevState,
+    //                 [chatListNum]: chatLog[0]?.chatContent || "내용 없음",
+    //             }));
+    //         } else {
+    //             console.warn(`채팅 로그가 비어 있습니다: ${chatListNum}`);
+    //         }
+    //     } catch (error) {
+    //         console.error(`채팅 로그를 불러오는 중 오류 발생 (${chatListNum}):`, error);
+    //     }
+    // };
+
+    // // 모든 채팅 로그 불러오기
+    // const fetchAllChatLogs = async () => {
+    //     for (const chat of chatList) {
+    //         await chatLogLoad(chat.chatListNum); // 각 채팅방의 로그 가져옴
+    //     }
+    // };
+
+    // // 각 채팅 내역 가져오기
+    // useEffect(() => {
+    //     if (chatList.length > 0) {
+    //         fetchAllChatLogs();
+    //     }
+    // }, [chatList]);
+
+    // 위 세개의 함수는 채팅 목록 제목을 첫 채팅으로 해서 불러오는 함수
+
+    // 새로운 채팅방 추가를 할려다가 안함
+    // const handleNewChatClick = (newChat) => {
+    //     setChatList((prevChatList) => [...prevChatList, newChat]);
+    // };
+
+    // 각 채팅방 클릭시 채팅 불러오기
+    const chatListClick = async (chatListNum) => {
+        const chat = await ProcessLogLoad(chatListNum);
+        const setLoadChat = chat.map(item => ({     // 채팅 로그를 가져온다는 값을 추가
+            ...item,
+            loadChat: 1
+        }));
+
+        console.log("채팅 클릭 ", setLoadChat);
+        chatLog(setLoadChat);
+    }
 
     return (
         <>
@@ -464,8 +534,5 @@ const ChatSideBar = ({ chatOpen, chatList, setChatList, isChatListCreated, handl
         </>
     );
 };
-
-
-
 
 export default ChatSideBar;

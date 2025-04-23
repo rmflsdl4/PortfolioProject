@@ -16,6 +16,7 @@ export const ProcessLogin = async (data, reset) => {
         if (response && response.status === 200) {
             alert('로그인에 성공했습니다!');
             sessionStorage.setItem("userId", requestData.id);
+            sessionStorage.setItem("chatListNum", "0");
             reset();
             window.location.reload();
         }

@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { GuHpImg, ScheduleImg, WebMailImg, NuriSysImg, CertificateImg, OpinionIcon, HelpIcon, SettingIcon } from './ImageComponents';
 import { ProcessChatLoad } from './ProcessChatLoad';
+import { ProcessLogLoad } from './ProcessLogLoad';
 
 // 스타일 컴포넌트
 const MenuzDiv = styled.div`

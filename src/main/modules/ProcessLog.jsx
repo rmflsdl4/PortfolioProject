@@ -15,7 +15,7 @@ export const ProcessLog = async (text, roomID, sender) => {
         });
 
         if (response && response.status === 201) {
-            
+            sessionStorage.setItem("chatListNum", requestData.chatListNum);
         } else {
             alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
         }

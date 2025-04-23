@@ -59,9 +59,15 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, 
     const addChat = async () => {
         if (inputText.trim() && !isTyping) {
             const currentTime = new Date();
+            const year = currentTime.getFullYear();
+            const month = String(currentTime.getMonth() + 1).padStart(2, '0');
+            const day = String(currentTime.getDate()).padStart(2, '0');
             const hours = currentTime.getHours();
             const minutes = currentTime.getMinutes();
+            const seconds = String(currentTime.getSeconds()).padStart(2, '0');
+
             const formattedTime = `${hours >= 12 ? '오후' : '오전'} ${hours % 12 || 12}:${minutes.toString().padStart(2, '0')}`;
+            const formattedTimeForTitle = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;     // 채팅 목록에 표시할 시간 포맷
             
             const newChat = {
                 text: inputText.trim(),
