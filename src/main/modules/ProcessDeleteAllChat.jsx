@@ -1,9 +1,11 @@
 import axios from 'axios';
 
+const BASE_URL = Process.env.SPRING_API_BASE_URL;
+
 export const ProcessDeleteAllChat = async () => {
     try {
         const userId = sessionStorage.getItem("userId");
-        const response = await axios.post('http://localhost:8080/api/Chat/deleteAllChatList', userId, {
+        const response = await axios.post(`${BASE_URL}/api/Chat/deleteAllChatList`, userId, {
             headers: {
                 'Content-Type': 'application/json',
             },

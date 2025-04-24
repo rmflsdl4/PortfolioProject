@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const BASE_URL = Process.env.LLM_API_BASE_URL;
+
 export const ProcessLLM = async (text) => {
     try {
-        const response = await axios.post('LLM 서버 주소', { question: text }, {
+        const response = await axios.post(`${BASE_URL}`, { question: text }, {
             headers: {
                 'Content-Type': 'application/json',
             },

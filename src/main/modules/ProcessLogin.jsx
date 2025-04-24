@@ -1,5 +1,7 @@
 import axios from "axios";
 
+const BASE_URL = Process.env.SPRING_API_BASE_URL;
+
 export const ProcessLogin = async (data, reset) => {
     try {
         const requestData = {
@@ -7,7 +9,7 @@ export const ProcessLogin = async (data, reset) => {
             pw: data.password,
         };
 
-        const response = await axios.post('http://localhost:8080/api/User/login', requestData, {
+        const response = await axios.post(`${BASE_URL}/api/User/login`, requestData, {
             headers: {
                 'Content-Type': 'application/json',
             },

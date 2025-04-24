@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const BASE_URL = Process.env.SPRING_API_BASE_URL;
+
 export const ProcessLog = async (text, roomID, sender) => {
     try {
         const requestData = {
@@ -8,7 +10,7 @@ export const ProcessLog = async (text, roomID, sender) => {
             chatListNum: roomID,
             chatSender: sender,
         };
-        const response = await axios.post('http://localhost:8080/api/Chat/saveChatLog', requestData, {
+        const response = await axios.post(`${BASE_URL}/api/Chat/saveChatLog`, requestData, {
             headers: {
                 'Content-Type': 'application/json',
             },

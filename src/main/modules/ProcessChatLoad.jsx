@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const BASE_URL = Process.env.SPRING_API_BASE_URL;
+
 export const ProcessChatLoad = async () => {
     try {
-        const response = await axios.post('http://localhost:8080/api/Chat/getChatlists', sessionStorage.getItem("userId"), {
+        const response = await axios.post(`${BASE_URL}/api/Chat/getChatlists`, sessionStorage.getItem("userId"), {
             headers: {
                 'Content-Type': 'application/json',
             },

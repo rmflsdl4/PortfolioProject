@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const BASE_URL = Process.env.SPRING_API_BASE_URL;
+
 export const ProcessChat = async (text) => {
     const formatDate = (date) => {
         const pad = (num) => String(num).padStart(2, "0");
@@ -20,7 +22,7 @@ export const ProcessChat = async (text) => {
             chatTitle: formatDate(new Date()),
         };
 
-        const response = await axios.post('http://localhost:8080/api/Chat/createChatList', requestData, {
+        const response = await axios.post(`${BASE_URL}/api/Chat/createChatList`, requestData, {
             headers: {
                 'Content-Type': 'application/json',
             },
