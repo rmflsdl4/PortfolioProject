@@ -80,7 +80,7 @@ const BodyLogic = ({ setMenuOpen, chat, onTypingEnd, onTypingStop, setChatOpen, 
             setInputHeight(77);
 
             const replyChat = {
-                text: `### Hello, World!
+                text: await ProcessLLM(inputText.trim()) || `### Hello, World!
 This is a markdown message with **bold** text and *italic* text.
 - List item 1
 - List item 2

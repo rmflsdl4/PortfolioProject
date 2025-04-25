@@ -1,16 +1,17 @@
 import axios from 'axios';
 
-const BASE_URL = Process.env.LLM_API_BASE_URL;
+const BASE_URL = process.env.REACT_APP_LLM_API_BASE_URL || '';
 
 export const ProcessLLM = async (text) => {
     try {
-        const response = await axios.post(`${BASE_URL}`, { question: text }, {
+        const response = await axios.post(`${BASE_URL}/chat`, { question: text }, {
             headers: {
                 'Content-Type': 'application/json',
             },
         });
 
         if (response && response.status === 201) {
+            console.log(response.data.answer);
             return response.data.answer;
         } else {
             alert('채팅 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
